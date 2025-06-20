@@ -1,0 +1,291 @@
+.grapesjs {
+  width: 100%;
+  height: 100%;
+  gap: 16px;
+  display: flex;
+  flex-direction: row;
+}
+.leftPanel {
+  float: left;
+}
+.rightPanel {
+  float: right;
+}
+.editorPanel {
+  width: 100%;
+  height: 100vh;
+  background-color: var(--greyLight);
+  display: flex;
+  flex-direction: column;
+}
+.sidePanel {
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.panel_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--greyLight);
+  gap: 8px;
+}
+.panel_header .panel_header_title {
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--greyDark);
+}
+
+.panel_header .add_page_btn {
+  color: var(--green);
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--white);
+  border: none;
+  justify-content: end;
+}
+
+.panel_header .add_page_btn svg path {
+  fill: var(--green);
+}
+
+.panel_body .pages_list {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel_body .pages_list .page_item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.panel_body .pages_list .page_item:hover {
+  background-color: var(--greyLight1);
+}
+.panel_body .pages_list .page_item .page_item_title {
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--greyDark);
+  flex: 1;
+}
+
+.panel_body .pages_list .page_item.active .page_item_actions .collapseIcon svg {
+  transform: rotate(180deg);
+}
+
+.gjs-one-bg {
+  background: none !important;
+}
+.panel__devices .gjs-pn-buttons {
+  gap: 8px !important;
+}
+.panel__devices .gjs-pn-buttons .gjs-pn-btn {
+  width: 72px !important;
+  height: 62px !important;
+  border-radius: 8px !important;
+  background-color: none !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  color: var(--greyDark) !important;
+}
+.panel__devices .gjs-pn-buttons .gjs-pn-btn svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+.panel__devices .gjs-pn-buttons .gjs-pn-btn svg path {
+  fill: var(--greyDark) !important;
+}
+.panel__devices .gjs-pn-buttons .gjs-pn-btn.gjs-pn-active {
+  background-color: var(--LightGreen) !important;
+  color: var(--green) !important;
+}
+.panel__devices .gjs-pn-buttons .gjs-pn-btn.gjs-pn-active svg path {
+  fill: var(--green) !important;
+}
+.panel__history {
+  display: flex;
+}
+.panel__history .gjs-pn-buttons {
+  gap: 0px !important;
+}
+
+.panel__history .gjs-pn-buttons .gjs-pn-btn {
+  margin: 0 !important;
+}
+
+.panel__history .gjs-pn-buttons .gjs-pn-btn.separator {
+  border-right: 1px solid var(--greyLight) !important;
+}
+.panel__history .fullscreen-button {
+  width: 122px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: var(--white);
+  color: var(--green);
+  font-weight: 700;
+  font-size: 16px;
+  border: none !important;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  align-self: center;
+}
+
+.panel__history .publish-button {
+  width: 122px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: var(--greyLight);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 16px;
+  border: none !important;
+}
+
+/* Device Preview Styles */
+.gjs-frame-wrapper {
+  transition: width 0.3s ease;
+  margin: 0 auto;
+}
+
+/* Make sure the canvas changes size properly */
+.gjs-cv-canvas {
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+
+.editor-canvas {
+  margin: 0 auto;
+  transition: width 0.3s ease;
+}
+
+/* Add a hint of device boundaries */
+[data-device-type="mobile"] .gjs-frame-wrapper {
+  max-width: 320px !important;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  padding: 10px 5px 40px;
+  position: relative;
+}
+
+[data-device-type="mobile"] .gjs-frame-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background-color: #ddd;
+  border-radius: 4px;
+}
+
+[data-device-type="tablet"] .gjs-frame-wrapper {
+  max-width: 768px !important;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Layer Manager Styling */
+.layer-container {
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Override default GrapesJS layer manager styles */
+.gjs-layer {
+  font-size: 12px !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  margin-bottom: 5px !important;
+  background-color: var(--white) !important;
+  border: 1px solid var(--greyLight) !important;
+  transition: all 0.2s ease !important;
+}
+
+.gjs-layer.gjs-selected {
+  background-color: var(--LightGreen) !important;
+  border-color: var(--green) !important;
+}
+
+.gjs-layer.gjs-hovered {
+  background-color: rgba(29, 136, 68, 0.05) !important;
+}
+
+.gjs-layer-title {
+  font-weight: 500 !important;
+  color: var(--greyDark) !important;
+}
+
+.gjs-layer-count {
+  background-color: var(--greyLight) !important;
+  color: var(--greyDark) !important;
+  border-radius: 50% !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+  text-align: center !important;
+  font-size: 11px !important;
+}
+
+.gjs-layer-vis,
+.gjs-layer-move,
+.gjs-layer-caret {
+  color: var(--greyDark) !important;
+  opacity: 0.7 !important;
+}
+
+.gjs-layer-vis:hover,
+.gjs-layer-move:hover,
+.gjs-layer-caret:hover {
+  opacity: 1 !important;
+  color: var(--green) !important;
+}
+
+/* Layer drag and drop styling */
+.gjs-layer.gjs-dragging {
+  opacity: 0.7 !important;
+  border: 1px dashed var(--green) !important;
+}
+
+.gjs-layers-container {
+  padding: 5px 0 !important;
+}
+
+.gjs-layer-vis.gjs-layer-off {
+  opacity: 0.4 !important;
+  text-decoration: line-through !important;
+}
+
+/* Layer children indentation */
+.gjs-layer .gjs-layer-children {
+  margin-left: 18px !important;
+  padding-left: 10px !important;
+  border-left: 1px dashed var(--greyLight) !important;
+}
+
+.gjs-layer-name {
+  flex: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+

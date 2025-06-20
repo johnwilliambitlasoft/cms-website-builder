@@ -1,14 +1,85 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Import fonts directly in CSS */
+@font-face {
+  font-family: "Genos";
+  src: url("/assets/font/Genos/Genos-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@font-face {
+  font-family: "Genos";
+  src: url("/assets/font/Genos/Genos-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
+
+@font-face {
+  font-family: "Genos";
+  src: url("/assets/font/Genos/Genos-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/font/DM_Sans/DMSans_18pt-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/font/DM_Sans/DMSans_18pt-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/font/DM_Sans/DMSans_18pt-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/font/DM_Sans/DMSans_18pt-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --white: #ffffff;
+  --green: #1d8844;
+  --LightGreen: #ebfff2;
+  --red: #ff573c;
+  --redGradient: linear-gradient(90deg, #ffffff, #fff8f7, #fee2dd);
+  --redLight: #ffb3b3;
+  --grey: #5f6772;
+  --greyLight: #e7ebef;
+  --greyLight1: #F3F5F8;
+  --greyLight2: #787e88;
+  --greyDark: #323841;
+  
+
+  /* Font families */
+  --font-genos: "Genos", sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --greyLight: #0a0a0a;
+    --greyDark: #ededed;
+  }
+} */
 
 html,
 body {
@@ -17,11 +88,36 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--greyDark);
+  background: var(--greyLight);
+  font-family: var(--font-dm-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.main-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 576px) {
+  .main-container {
+    max-width: 540px;
+    display: flex;
+  }
+}
+@media (min-width: 768px) {
+  .main-container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .main-container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .main-container {
+    max-width: 1140px;
+  }
 }
 
 * {
@@ -35,8 +131,14 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Apply body font by default */
+body {
+  font-family: var(--font-dm-sans);
+  font-weight: 400;
+}
+
+/* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
-}
+} */

@@ -1,0 +1,38 @@
+.header {
+  background-color: var(--white);
+  min-height: 72px;
+  max-height: 72px;
+  padding: 16px 32px;
+  border: 1px solid var(--greyLight);
+  display: flex;
+  align-items: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.TextLogo {
+  font-family: var(--font-genos);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.deviceActionContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
+}
+
+.rightActionContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 16px;
+  justify-content: flex-end;
+}
