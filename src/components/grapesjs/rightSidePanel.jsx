@@ -7,11 +7,10 @@ const RightSidePanel = () => {
     <div className='rightPanel sidePanel'>
       <div className='panel_header'>
         <span className='panel_header_title'>
-          Layers
+          Edit Widget
         </span>
       </div>
       <div className='panel_body'>
-        <div className='layer-container'></div>
       </div>
     </div>
   )

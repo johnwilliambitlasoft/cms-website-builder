@@ -6,7 +6,7 @@ import 'grapesjs/dist/css/grapes.min.css';
 import './grapesjs.css';
 import RightSidePanel from './rightSidePanel';
 import LeftSidePanel from './leftSidePanel';
-import { DesktopIcon, MobileIcon, UndoIcon, RedoIcon, PlayIcon } from './EditorSvg';
+import { DesktopIcon, MobileIcon, UndoIcon, RedoIcon, PlayIcon, DragIcon } from './EditorSvg';
 import { setCurrentPage } from '@/lib/redux/init/init.slice';
 const Grapesjs = () => {
   const dispatch = useDispatch();
@@ -18,35 +18,34 @@ const Grapesjs = () => {
       id: 'page1',
       title: 'Home',
       component: `<div class="section" style="padding: 20px; background-color: #fff;">
-                    <h1>Welcome to the Home Page 1</h1>
-                    <p>This is the content of the home page.</p>
-                  </div><div class="section" style="padding: 20px; background-color: #fff;">
-                    <h1>Welcome to the Home Page 2</h1>
-                    <p>This is the content of the home page.</p>
-                  </div>`,
+                      <h1>Welcome to the Home Page 1</h1>
+                      <p>This is the content of the home page.</p>
+                    </div><div class="section" style="padding: 20px; background-color: #fff;">
+                      <h1>Welcome to the Home Page 2</h1>
+                      <p>This is the content of the home page.</p>
+                    </div>`,
       styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
     },
     {
       id: 'page2',
       title: 'About',
       component: `<div class="section" style="padding: 20px; background-color: #fff;">
-                    <h1>About Us</h1>
-                    <p>This is the content of the about page.</p>
-                  </div>`,
+                      <h1>About Us</h1>
+                      <p>This is the content of the about page.</p>
+                    </div>`,
       styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
     }]
   const changePage = (pageId) => {
-    debugger
     if (editorRef.current) {
       const editor = editorRef.current;
       const page = pages.find(p => p.id === pageId);
-
       if (page) {
         const currentPageIndex = pages.findIndex(p => p.id === currentPage);
         if (currentPageIndex !== -1) {
           pages[currentPageIndex].component = editor.getHtml();
           pages[currentPageIndex].styles = editor.getCss();
         }
+        debugger
         editor.setComponents(page.component);
         editor.setStyle(page.styles);
         dispatch(setCurrentPage(pageId));
@@ -98,7 +97,7 @@ const Grapesjs = () => {
         ],
       },
       layerManager: {
-        appendTo: '.layer-container',
+        appendTo: `.layer-container-${currentPage}`,
         scrollLayers: true,
         showWrapper: true
       },
@@ -119,6 +118,12 @@ const Grapesjs = () => {
       editor.setComponents(initialPage.component);
       editor.setStyle(initialPage.styles);
     }
+
+    // Initialize the layer manager
+    setTimeout(() => {
+      editor.LayerManager.render();
+    }, 100);
+
     editorRef.current = editor;
 
     editor.Panels.addPanel({
@@ -174,6 +179,7 @@ const Grapesjs = () => {
         }
       ],
     });
+
     // Define commands for device switching
     editor.Commands.add('set-device-desktop', {
       run: (editor) => editor.setDevice('desktop')
