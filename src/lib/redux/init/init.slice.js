@@ -22,16 +22,21 @@ const initialState = {
               { text: 'Home', url: '/' },
               { text: 'About Us', url: '/about' },
               { text: 'Contact', url: '/contact' },
-              { text: 'Help', url: '/help' }
+              { text: 'john', url: '/help' }
             ]
           }
         },
         {
-          id: 'banner_search_widget',
-          folder: 'banner_search_widget',
-          templateId: 'banner_search_widget_1',
+          id: 'hero_banner',
+          folder: 'hero_banner',
+          templateId: 'hero_banner_1',
           data: {
-            bannerImageUrl: 'https://example.com/banner.jpg',
+            "title": "Build Beautiful Websites",
+            "subtitle": "Our CMS Website Builder makes it easy to create stunning, responsive websites without writing code.",
+            "buttonText": "Get Started",
+            "buttonUrl": "/get-started",
+            "imageUrl": "/assets/svg/hero_image.svg",
+            "imageAlt": "Website Builder Platform"
           }
         }
       ],
@@ -47,6 +52,7 @@ const initialState = {
     {
       id: 'page2',
       title: 'About',
+      widgets: [],
       component: `<div class="section" style="padding: 20px; background-color: #fff;">
                       <h1>About Us</h1>
                       <p>This is the content of the about page.</p>
@@ -54,17 +60,7 @@ const initialState = {
       styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
     }],
   currentPage: 'page1',
-  currentWidget: [{
-    id: 'header_navigation',
-    title: 'Header Navigation',
-    data: {}
-  },
-  {
-    id: 'banner_&_search_widget',
-    title: 'Banner & Search Widget',
-    data: {}
-  }
-  ],
+  currentWidget: 'header_navigation',
 }
 
 
@@ -79,11 +75,16 @@ const initSlice = createSlice({
       state.currentWidget = action.payload;
     },
     setPageData: (state, action) => {
-      const { pageId, component, styles } = action.payload;
+      const { pageId, component, styles, widgets } = action.payload;
       const pageIndex = state.pages.findIndex(page => page.id === pageId);
       if (pageIndex !== -1) {
         state.pages[pageIndex].component = component;
         state.pages[pageIndex].styles = styles;
+
+        // Also update widgets if provided
+        if (widgets) {
+          state.pages[pageIndex].widgets = widgets;
+        }
       }
     },
     addPage: (state, action) => {
@@ -115,6 +116,27 @@ const initSlice = createSlice({
         state.pages[pageIndex].component = newComponent;
         state.pages[pageIndex].styles = newStyles;
       }
+    },
+    updateWidgetOrder: (state, action) => {
+      const { pageId, newOrder } = action.payload;
+      debugger
+      const pageIndex = state.pages.findIndex(page => page.id === pageId);
+      if (pageIndex !== -1) {
+        state.pages[pageIndex].widgets = newOrder;
+      }
+    },
+    updateWidgetData: (state, action) => {
+      const { pageId, widgetId, newData } = action.payload;
+      const pageIndex = state.pages.findIndex(page => page.id === pageId);
+      if (pageIndex !== -1) {
+        const widgetIndex = state.pages[pageIndex].widgets.findIndex(widget => widget.id === widgetId);
+        if (widgetIndex !== -1) {
+          state.pages[pageIndex].widgets[widgetIndex] = {
+            ...state.pages[pageIndex].widgets[widgetIndex],
+            ...newData
+          };
+        }
+      }
     }
   },
   extraReducers: (builder) => {
@@ -128,7 +150,9 @@ export const {
   addPage,
   deletePage,
   updatePageTitle,
-  updatePageContent
+  updatePageContent,
+  updateWidgetOrder,
+  updateWidgetData
 } = initSlice.actions;
 
 export default initSlice.reducer;

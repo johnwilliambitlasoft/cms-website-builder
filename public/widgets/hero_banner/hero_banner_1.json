@@ -1,0 +1,10 @@
+{
+  "html": "<div class=\"hero-banner\">\n  <div class=\"hero-content\">\n    <h1 class=\"hero-title\">{{title}}</h1>\n    <p class=\"hero-subtitle\">{{subtitle}}</p>\n    {{#if buttonText}}\n      <a href=\"{{buttonUrl}}\" class=\"hero-button\">{{buttonText}}</a>\n    {{/if}}\n  </div>\n  <div class=\"hero-image\">\n    <img src=\"{{imageUrl}}\" alt=\"{{imageAlt}}\">\n  </div>\n</div>",
+  "css": ".hero-banner {\n  display: flex;\n  align-items: center;\n  padding: 60px 20px;\n  max-width: 1200px;\n  margin: 0 auto;\n  gap: 40px;\n}\n\n.hero-content {\n  flex: 1;\n}\n\n.hero-title {\n  font-size: 48px;\n  margin-bottom: 16px;\n  color: #222;\n  font-family: 'DM Sans', sans-serif;\n  font-weight: 700;\n}\n\n.hero-subtitle {\n  font-size: 20px;\n  margin-bottom: 32px;\n  color: #666;\n  line-height: 1.5;\n}\n\n.hero-button {\n  display: inline-block;\n  padding: 12px 24px;\n  background-color: #0070f3;\n  color: #fff;\n  text-decoration: none;\n  border-radius: 4px;\n  font-weight: 500;\n  transition: background-color 0.3s;\n}\n\n.hero-button:hover {\n  background-color: #0051cc;\n}\n\n.hero-image {\n  flex: 1;\n}\n\n.hero-image img {\n  max-width: 100%;\n  height: auto;\n  display: block;\n  border-radius: 8px;\n}\n\n@media (max-width: 768px) {\n  .hero-banner {\n    flex-direction: column-reverse;\n    padding: 40px 20px;\n  }\n  \n  .hero-title {\n    font-size: 36px;\n  }\n  \n  .hero-subtitle {\n    font-size: 18px;\n  }\n}",
+  "metadata": {
+    "id": "hero_banner_1",
+    "name": "Hero Banner",
+    "thumbnail": "/assets/svg/hero_banner.svg",
+    "description": "A responsive hero banner with image and call to action"
+  }
+}

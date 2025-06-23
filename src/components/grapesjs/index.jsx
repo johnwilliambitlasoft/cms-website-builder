@@ -1,40 +1,74 @@
 'use client'
 import { useSelector, useDispatch } from 'react-redux';
 import { useMessage } from '@/lib/provider/MessageProvider';
-import React, { useEffect, useRef} from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import './grapesjs.css';
 import RightSidePanel from './rightSidePanel';
 import LeftSidePanel from './leftSidePanel';
 import { DesktopIcon, MobileIcon, UndoIcon, RedoIcon, PlayIcon, DragIcon } from './EditorSvg';
-import { setCurrentPage, setPageData, addPage } from '@/lib/redux/init/init.slice';
-import { constructPageContent } from '@/lib/utils';
+import { setCurrentPage, setPageData, addPage, updateWidgetOrder } from '@/lib/redux/init/init.slice';
+import { constructPageContent, extractWidgetsFromContent } from '@/lib/utils';
+import { registerWidgetBlocks, registerWidgetComponent } from '@/lib/grapesJsWidgets';
 const Grapesjs = () => {
   const dispatch = useDispatch();
   const messageApi = useMessage();
   const editorRef = useRef(null);
   const containerRef = useRef(null);
   const currentPage = useSelector((state) => state.init.currentPage);
-
   const pages = useSelector((state) => state.init.pages);
 
-  const changePage = (pageId) => {
-    debugger
-    if (editorRef.current) {
-      const editor = editorRef.current;
-      const page = pages.find(p => p.id === pageId);
-      if (page) {
+  const changePage = async (pageId) => {
+    if (!editorRef.current) return;
+    
+    const editor = editorRef.current;
+    const page = pages.find(p => p.id === pageId);
+    
+    if (page) {
+      try {
+        // Save current page before switching
+        const currentHtml = editor.getHtml();
+        const currentCss = editor.getCss();
+        
+        // Extract widgets from current page content
+        const extractedWidgets = extractWidgetsFromContent(currentHtml);
+        
+        // Save both raw HTML/CSS and extracted widgets
         dispatch(setPageData({
           pageId: currentPage,
-          component: editor.getHtml(),
-          styles: editor.getCss()
+          component: currentHtml,
+          styles: currentCss,
+          widgets: extractedWidgets
         }));
-        debugger
+        
+        // Show success message
         messageApi.success(`Switched to page: ${page.title}`);
-        editor.setComponents(page.component);
-        editor.setStyle(page.styles);
+        
+        // Load new page
+        if (page.widgets?.length > 0) {
+          // If the page has widget configurations, render them
+          try {
+            const pageContent = await constructPageContent(page.widgets);
+            editor.setComponents(pageContent.component);
+            editor.setStyle(pageContent.styles);
+          } catch (error) {
+            console.error('Error constructing page content:', error);
+            // Fall back to raw HTML/CSS if widget rendering fails
+            editor.setComponents(page.component || '');
+            editor.setStyle(page.styles || '');
+          }
+        } else {
+          // Otherwise just load the raw HTML/CSS
+          editor.setComponents(page.component || '');
+          editor.setStyle(page.styles || '');
+        }
+        
+        // Update current page in state
         dispatch(setCurrentPage(pageId));
+      } catch (error) {
+        console.error('Error changing page:', error);
+        messageApi.error('Failed to switch page');
       }
     }
   };
@@ -77,6 +111,9 @@ const Grapesjs = () => {
 
 
   useEffect(() => {
+    // Initialize editor with async setup
+    const initializeEditor = async () => {
+      debugger
     const editorConfig = {
       storageManager: {
         type: 'local',
@@ -115,15 +152,35 @@ const Grapesjs = () => {
       ...editorConfig,
     });
 
+    // Register custom widget component
+    registerWidgetComponent(editor);
+    
+    // Store editor instance in ref
+    editorRef.current = editor;
+    
+    // Initialize with available widget blocks
+    registerWidgetBlocks(editor);
+    
     // Load the initial page
     const initialPage = pages.find(p => p.id === currentPage);
-    const initialPageContent = constructPageContent(initialPage.widgets);
-    debugger
-    if (initialPage) {
-      editor.setComponents(initialPageContent.component);
-      editor.setStyle(initialPageContent.styles);
+    
+    if (initialPage?.widgets?.length > 0) {
+      // If the page has widget definitions, render them
+      try {
+        debugger
+        const pageContent = await constructPageContent(initialPage.widgets);
+        debugger
+        editor.setComponents(pageContent.component);
+        editor.setStyle(pageContent.styles);
+      } catch (error) {
+        console.error('Error loading page content from widgets:', error);
+        messageApi.error('Failed to load page content');
+      }
+    } else if (initialPage) {
+      // Otherwise load raw HTML/CSS
+      editor.setComponents(initialPage.component || '');
+      editor.setStyle(initialPage.styles || '');
     }
-    editorRef.current = editor;
 
     addPanel(editor, {
       id: 'panel-devices',
@@ -193,12 +250,36 @@ const Grapesjs = () => {
       const deviceModel = editor.getDevice();
       setDeviceActive(deviceModel);
     });
-  }, []);
+    
+    // Add save event to extract widgets from content
+    editor.on('storage:store', (data) => {
+      try {
+        // Extract widgets from the HTML content
+        const widgets = extractWidgetsFromContent(editor.getHtml());
+        console.log('Extracted widgets from content:', widgets);
+        
+        // You can store these widgets in your state if needed
+      } catch (error) {
+        console.error('Error extracting widgets:', error);
+      }
+    });
+    };
+    
+    // Execute the async initialization
+    initializeEditor();
+  }, [currentPage, pages]);
 
   return (
     <div className='grapesjs'>
       <LeftSidePanel onPageChange={changePage} currentPage={currentPage} pages={pages} addPage={() => {
         dispatch(addPage());
+      }} 
+      updateWidgetOrder={(newOrder) => {
+        debugger
+        dispatch(updateWidgetOrder({
+          pageId: currentPage,
+          newOrder: newOrder
+        }));
       }} />
       <div className='editorPanel'>
         <div className="editor-container">

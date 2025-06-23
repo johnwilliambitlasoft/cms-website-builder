@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from 'react'
 import './grapesjs.css'
 import { AddIcon, CollapseIcon, ActionIcon, DragIcon } from './EditorSvg'
+import { ReactSortable } from "react-sortablejs";
 
 const LeftSidePanel = ({
   pages = [],
   currentPage = '',
   onPageChange,
-  addPage
+  addPage,
+  updateWidgetOrder
 }) => {
   const [expandedPages, setExpandedPages] = useState({});
 
@@ -61,8 +63,25 @@ const LeftSidePanel = ({
                   ></span>
                 </div>
               </div>
-              <div className={`layer-container-${page.id} ${expandedPages[page.id] ? 'expanded' : ''}`}>
-              </div>
+              {page.widgets && page.widgets.length > 0 && (
+                <div className='page_child_item_list'>
+                  <ReactSortable list={page.widgets} setList={updateWidgetOrder}>
+                    {page.widgets.map((widget, widgetIndex) => (
+                      <div
+                        key={widget.id || widgetIndex}
+                        className='page_child_item'
+                      >
+                        <span className='page_child_item_drag_icon' dangerouslySetInnerHTML={{ __html: DragIcon }}></span>
+                        <span className='page_child_item_title'>
+                          {widget.title || `Widget ${widgetIndex + 1}`}
+                        </span>
+                      </div>
+                    ))}
+                  </ReactSortable>
+                </div>
+              )}
+              {/* <div className={`layer-container-${page.id} ${expandedPages[page.id] ? 'expanded' : ''}`}>
+              </div> */}
             </div>
           ))}
         </div>
