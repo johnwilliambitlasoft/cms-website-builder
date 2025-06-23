@@ -170,7 +170,7 @@ const Grapesjs = () => {
           ],
         },
         layerManager: {
-          appendTo: `.layer-container-${currentPage}`,
+          appendTo: `.layer-container`,
           scrollLayers: true,
           showWrapper: true,
         },
@@ -282,24 +282,12 @@ const Grapesjs = () => {
         const deviceModel = editor.getDevice();
         setDeviceActive(deviceModel);
       });
-
-      // Add save event to extract widgets from content
-      editor.on("storage:store", (data) => {
-        try {
-          // Extract widgets from the HTML content
-          const widgets = extractWidgetsFromContent(editor.getHtml());
-          console.log("Extracted widgets from content:", widgets);
-
-          // You can store these widgets in your state if needed
-        } catch (error) {
-          console.error("Error extracting widgets:", error);
-        }
-      });
     };
-
     // Execute the async initialization
-    initializeEditor();
-  }, [currentPage, pages]);
+    if (editorRef.current == null) {
+      initializeEditor();
+    }
+  });
 
   return (
     <div className="grapesjs">

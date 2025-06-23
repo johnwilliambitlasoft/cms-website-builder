@@ -70,28 +70,28 @@ const LeftSidePanel = ({
                     ></span>
                   </div>
                 </div>
-                {page.widgets && page.widgets.length > 0 && (
-                  <div className="page_child_item_list">
-                    {page.widgets.map((widget, widgetIndex) => (
-                      <div
-                        key={widget.id || widgetIndex}
-                        className="page_child_item"
-                      >
-                        <span className="page_child_item_title">
-                          {widget.title || `Widget ${widgetIndex + 1}`}
-                        </span>
+                {currentPage == page.id &&
+                  page.widgets &&
+                  page.widgets.length > 0 && (
+                    <div className="page_child_item_list">
+                      {page.widgets.map((widget, widgetIndex) => (
                         <div
-                          className="page_child_item_drag_icon"
-                          dangerouslySetInnerHTML={{ __html: DragIcon }}
-                        ></div>
-                      </div>
-                    ))}
-                    {/* <ReactSortable list={page.widgets} setList={updateWidgetOrder}>
+                          key={widget.id || widgetIndex}
+                          className="page_child_item"
+                        >
+                          <span className="page_child_item_title">
+                            {widget.title || `Widget ${widgetIndex + 1}`}
+                          </span>
+                          <div
+                            className="page_child_item_drag_icon"
+                            dangerouslySetInnerHTML={{ __html: DragIcon }}
+                          ></div>
+                        </div>
+                      ))}
+                      {/* <ReactSortable list={page.widgets} setList={updateWidgetOrder}>
                   </ReactSortable> */}
-                  </div>
-                )}
-                {/* <div className={`layer-container-${page.id} ${expandedPages[page.id] ? 'expanded' : ''}`}>
-              </div> */}
+                    </div>
+                  )}
               </div>
             ))}
         </div>

@@ -8,7 +8,9 @@ const RightSidePanel = () => {
       <div className="panel_header">
         <span className="panel_header_title">Edit Widget</span>
       </div>
-      <div className="panel_body"></div>
+      <div className="panel_body">
+        <div className={`layer-container`}></div>
+      </div>
     </div>
   );
 };

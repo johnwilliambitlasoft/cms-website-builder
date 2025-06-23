@@ -8,35 +8,6 @@ import { renderTemplate } from "./templateEngine";
  * @returns {Promise<Object>} Widget object with html, css, and metadata
  */
 export const loadPublicWidget = async (folder, templateId) => {
-  // try {
-  //   // First try loading as JS (CommonJS or ES module)
-  //   const scriptPath = `/widgets/${folder}/${templateId}.js`;
-  //   console.log(`Attempting to load widget script: ${scriptPath}`);
-
-  //   // Dynamically create and load script
-  //   const script = document.createElement('script');
-  //   script.type = 'module';
-  //   script.src = scriptPath;
-
-  //   // Wait for script to load and evaluate
-  //   await new Promise((resolve, reject) => {
-  //     script.onload = resolve;
-  //     script.onerror = reject;
-  //     document.head.appendChild(script);
-  //   });
-
-  //   // Try to access the exported module content
-  //   if (window[`${folder}_${templateId}`]) {
-  //     return window[`${folder}_${templateId}`];
-  //   }
-
-  //   // If script loads but doesn't export correctly, try JSON
-  //   throw new Error('Script loaded but no export found');
-  // } catch (jsError) {
-  //   console.warn(`JS widget load failed: ${jsError.message}, trying JSON...`);
-
-  //   // Fallback to JSON
-  // }
   try {
     const jsonPath = `/widgets/${folder}/${templateId}.json`;
     const response = await fetch(jsonPath);
@@ -215,7 +186,7 @@ export const getAvailableWidgets = async () => {
  */
 export const getWidgetDefaultData = async (folder, templateId) => {
   try {
-    const response = await fetch(`/widgets/${folder}/${templateId}.data.json`);
+    const response = await fetch(`/widgets/${folder}/${folder}.data.json`);
 
     if (response.ok) {
       return await response.json();
