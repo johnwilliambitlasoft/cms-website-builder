@@ -1,16 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchBookingConfigs } from './config.thunks';
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchBookingConfigs } from "./config.thunks";
 
 const initialState = {
   bookingConfigs: {},
   isModalOpen: false,
   initialized: false,
-  theme: 'light',
-  language: 'en',
+  theme: "light",
+  language: "en",
 };
 
 const configSlice = createSlice({
-  name: 'config',
+  name: "config",
   initialState,
   reducers: {
     // Booking Configuration
@@ -34,7 +34,7 @@ const configSlice = createSlice({
       state.theme = action.payload;
     },
     toggleTheme: (state) => {
-      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      state.theme = state.theme === "light" ? "dark" : "light";
     },
 
     // Language

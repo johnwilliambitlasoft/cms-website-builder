@@ -8,25 +8,25 @@
  * - {{variable}} - Simple variable replacement
  * - {{#each array}} content {{/each}} - Loop through arrays
  * - {{#if condition}} content {{else}} alternative {{/if}} - Conditional rendering
- * 
+ *
  * @param {string} template - The HTML template string
  * @param {object} data - The data to inject into the template
  * @returns {string} - The rendered HTML
  */
 export function renderTemplate(template, data) {
-  if (!data || !template) return template || '';
-  
+  if (!data || !template) return template || "";
+
   let result = template;
-  
+
   // Process conditionals first
   result = processConditionals(result, data);
-  
+
   // Process loops
   result = processLoops(result, data);
-  
+
   // Process simple variables
   result = processVariables(result, data);
-  
+
   return result;
 }
 
@@ -34,12 +34,16 @@ export function renderTemplate(template, data) {
  * Process {{#if condition}} content {{else}} alternative {{/if}} blocks
  */
 function processConditionals(template, data) {
-  const ifRegex = /\{\{#if\s+(\w+)\}\}([\s\S]*?)(?:\{\{else\}\}([\s\S]*?))?\{\{\/if\}\}/g;
-  
-  return template.replace(ifRegex, (_, condition, trueBranch, falseBranch = '') => {
-    const value = data[condition];
-    return value ? trueBranch : falseBranch;
-  });
+  const ifRegex =
+    /\{\{#if\s+(\w+)\}\}([\s\S]*?)(?:\{\{else\}\}([\s\S]*?))?\{\{\/if\}\}/g;
+
+  return template.replace(
+    ifRegex,
+    (_, condition, trueBranch, falseBranch = "") => {
+      const value = data[condition];
+      return value ? trueBranch : falseBranch;
+    },
+  );
 }
 
 /**
@@ -47,15 +51,17 @@ function processConditionals(template, data) {
  */
 function processLoops(template, data) {
   const eachRegex = /\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g;
-  
+
   return template.replace(eachRegex, (_, arrayKey, itemTemplate) => {
     const array = data[arrayKey];
-    if (!Array.isArray(array)) return '';
-    
-    return array.map(item => {
-      // Process nested variables within the loop
-      return processVariables(itemTemplate, item);
-    }).join('');
+    if (!Array.isArray(array)) return "";
+
+    return array
+      .map((item) => {
+        // Process nested variables within the loop
+        return processVariables(itemTemplate, item);
+      })
+      .join("");
   });
 }
 
@@ -64,13 +70,13 @@ function processLoops(template, data) {
  */
 function processVariables(template, data) {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-    return data[key] !== undefined ? data[key] : '';
+    return data[key] !== undefined ? data[key] : "";
   });
 }
 
 /**
  * Parses widget definitions to extract common properties
- * 
+ *
  * @param {Object} widgetModule - The imported widget module
  * @returns {Object} - The normalized widget properties
  */
@@ -83,14 +89,14 @@ export function normalizeWidgetModule(widgetModule) {
     // If using named exports: export const html, export const css
     return {
       html: widgetModule.html,
-      css: widgetModule.css || '',
+      css: widgetModule.css || "",
       metadata: widgetModule.metadata || {
-        id: widgetModule.id || 'unknown',
-        name: widgetModule.name || 'Unnamed Widget',
-        thumbnail: widgetModule.thumbnail || '/assets/svg/default_widget.svg'
-      }
+        id: widgetModule.id || "unknown",
+        name: widgetModule.name || "Unnamed Widget",
+        thumbnail: widgetModule.thumbnail || "/assets/svg/default_widget.svg",
+      },
     };
   } else {
-    throw new Error('Invalid widget module format');
+    throw new Error("Invalid widget module format");
   }
 }

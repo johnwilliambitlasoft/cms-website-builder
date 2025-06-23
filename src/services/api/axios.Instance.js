@@ -4,7 +4,6 @@ export const API_URL = process.env.API_URL
   ? process.env.API_URL
   : "http://localhost:3000";
 
-
 const getHeaders = () => {
   const userJson = localStorage.getItem("user");
   const user = userJson ? JSON.parse(userJson) : null;
@@ -34,7 +33,7 @@ axiosInstance.interceptors.request.use(
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );
 
 axiosInstance.interceptors.response.use(
@@ -43,7 +42,7 @@ axiosInstance.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

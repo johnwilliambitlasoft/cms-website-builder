@@ -1,8 +1,8 @@
-import { renderTemplate } from './templateEngine';
+import { renderTemplate } from "./templateEngine";
 
 /**
  * Loads a widget from public/widgets folder
- * 
+ *
  * @param {string} folder - Widget folder name (e.g., 'header_navigation')
  * @param {string} templateId - Widget template ID (e.g., 'header_navigation_1')
  * @returns {Promise<Object>} Widget object with html, css, and metadata
@@ -12,89 +12,96 @@ export const loadPublicWidget = async (folder, templateId) => {
   //   // First try loading as JS (CommonJS or ES module)
   //   const scriptPath = `/widgets/${folder}/${templateId}.js`;
   //   console.log(`Attempting to load widget script: ${scriptPath}`);
-    
+
   //   // Dynamically create and load script
   //   const script = document.createElement('script');
   //   script.type = 'module';
   //   script.src = scriptPath;
-    
+
   //   // Wait for script to load and evaluate
   //   await new Promise((resolve, reject) => {
   //     script.onload = resolve;
   //     script.onerror = reject;
   //     document.head.appendChild(script);
   //   });
-    
+
   //   // Try to access the exported module content
   //   if (window[`${folder}_${templateId}`]) {
   //     return window[`${folder}_${templateId}`];
   //   }
-    
+
   //   // If script loads but doesn't export correctly, try JSON
   //   throw new Error('Script loaded but no export found');
   // } catch (jsError) {
   //   console.warn(`JS widget load failed: ${jsError.message}, trying JSON...`);
-    
+
   //   // Fallback to JSON
   // }
   try {
-    debugger
     const jsonPath = `/widgets/${folder}/${templateId}.json`;
     const response = await fetch(jsonPath);
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch JSON: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch JSON: ${response.status} ${response.statusText}`,
+      );
     }
-    
+
     return await response.json();
   } catch (jsonError) {
-    console.error(`Failed to load widget (${folder}/${templateId}):`, jsonError);
+    console.error(
+      `Failed to load widget (${folder}/${templateId}):`,
+      jsonError,
+    );
     throw new Error(`Widget ${folder}/${templateId} not found in any format`);
   }
 };
 
 /**
  * Constructs GrapesJS page content from widget configurations
- * 
+ *
  * @param {Array} widgets - Array of widget configurations
  * @returns {Object} - Object containing component HTML and CSS styles
  */
 export const constructPageContent = async (widgets) => {
-  console.log('Constructing page content from widgets:', widgets);
-  
+  console.log("Constructing page content from widgets:", widgets);
+
   if (!Array.isArray(widgets) || widgets.length === 0) {
-    console.warn('No widgets provided or invalid widget array');
-    return { component: '', styles: '' };
+    console.warn("No widgets provided or invalid widget array");
+    return { component: "", styles: "" };
   }
-  
-  let component = '';
-  let styles = '';
-  
+
+  let component = "";
+  let styles = "";
+
   try {
     // Process each widget in sequence
-    debugger
+
     for (const widget of widgets) {
       try {
         const { id, folder, templateId, data } = widget;
-        debugger
+
         if (!folder || !templateId) {
-          console.warn('Invalid widget configuration, missing folder or templateId:', widget);
+          console.warn(
+            "Invalid widget configuration, missing folder or templateId:",
+            widget,
+          );
           continue;
         }
-        
+
         console.log(`Loading widget: ${folder}/${templateId}`);
-        
+
         // Load the widget definition
         const widgetDefinition = await loadPublicWidget(folder, templateId);
-        
+
         if (!widgetDefinition || !widgetDefinition.html) {
           console.warn(`Widget ${folder}/${templateId} has invalid format`);
           continue;
         }
-        
+
         // Render the HTML template with provided data
         const renderedHtml = renderTemplate(widgetDefinition.html, data);
-        
+
         // Add data-widget attributes for editor identification
         const widgetWrapper = `
           <!-- Widget: ${folder}/${templateId} -->
@@ -105,14 +112,14 @@ export const constructPageContent = async (widgets) => {
           </div>
           <!-- End Widget: ${folder}/${templateId} -->
         `;
-        
+
         component += widgetWrapper;
-        styles += widgetDefinition.css || '';
-        
+        styles += widgetDefinition.css || "";
+
         console.log(`Successfully rendered widget: ${folder}/${templateId}`);
       } catch (widgetError) {
-        console.error('Error rendering widget:', widget, widgetError);
-        
+        console.error("Error rendering widget:", widget, widgetError);
+
         // Add placeholder for failed widget
         component += `
           <!-- Error rendering widget: ${widget.folder}/${widget.templateId} -->
@@ -124,84 +131,84 @@ export const constructPageContent = async (widgets) => {
       }
     }
   } catch (error) {
-    console.error('Error in constructPageContent:', error);
+    console.error("Error in constructPageContent:", error);
   }
-  
+
   return {
     component,
-    styles
+    styles,
   };
-}
+};
 
 /**
  * Gets available widgets for the GrapesJS editor
- * 
+ *
  * @returns {Promise<Array>} Array of widget categories and items
  */
 export const getAvailableWidgets = async () => {
   try {
     // Try to fetch the widget index from public/widgets/index.json
-    const response = await fetch('/widgets/index.json');
-    
+    const response = await fetch("/widgets/index.json");
+
     if (response.ok) {
       return await response.json();
     }
-    
+
     // Fallback to hardcoded widget list if index.json doesn't exist
     return [
       {
-        category: 'Navigation',
+        category: "Navigation",
         items: [
           {
-            id: 'header_navigation_1',
-            folder: 'header_navigation',
-            templateId: 'header_navigation_1',
-            name: 'Header Navigation',
-            thumbnail: '/assets/svg/header_nav.svg'
-          }
-        ]
+            id: "header_navigation_1",
+            folder: "header_navigation",
+            templateId: "header_navigation_1",
+            name: "Header Navigation",
+            thumbnail: "/assets/svg/header_nav.svg",
+          },
+        ],
       },
       {
-        category: 'Layout',
+        category: "Layout",
         items: [
           {
-            id: 'hero_banner_1',
-            folder: 'hero_banner',
-            templateId: 'hero_banner_1',
-            name: 'Hero Banner',
-            thumbnail: '/assets/svg/hero_banner.svg'
+            id: "hero_banner_1",
+            folder: "hero_banner",
+            templateId: "hero_banner_1",
+            name: "Hero Banner",
+            thumbnail: "/assets/svg/hero_banner.svg",
           },
           {
-            id: 'footer_1',
-            folder: 'footer',
-            templateId: 'footer_1',
-            name: 'Standard Footer',
-            thumbnail: '/assets/svg/footer.svg'
-          }
-        ]
+            id: "footer_1",
+            folder: "footer",
+            templateId: "footer_1",
+            name: "Standard Footer",
+            thumbnail: "/assets/svg/footer.svg",
+          },
+        ],
       },
       {
-        category: 'Content',
+        category: "Content",
         items: [
           {
-            id: 'features_1',
-            folder: 'features',
-            templateId: 'features_1',
-            name: 'Feature Cards',
-            thumbnail: '/assets/svg/features.svg'
-          }
-        ]
-      }
+            id: "features_1",
+            folder: "features",
+            templateId: "features_1",
+            name: "Feature Cards",
+            thumbnail: "/assets/svg/features.svg",
+          },
+        ],
+      },
     ];
   } catch (error) {
-    console.error('Error fetching available widgets:', error);
+    console.error("Error fetching available widgets:", error);
     return [];
   }
 };
 
 /**
  * Gets default data template for a specific widget
- * 
+ *
  * @param {string} folder Widget folder name
  * @param {string} templateId Widget template ID
  * @returns {Promise<Object>} Default data for the widget
@@ -209,58 +216,61 @@ export const getAvailableWidgets = async () => {
 export const getWidgetDefaultData = async (folder, templateId) => {
   try {
     const response = await fetch(`/widgets/${folder}/${templateId}.data.json`);
-    
+
     if (response.ok) {
       return await response.json();
     }
-    
+
     // Return empty object if no default data file exists
     return {};
   } catch (error) {
-    console.warn(`No default data found for widget ${folder}/${templateId}:`, error);
+    console.warn(
+      `No default data found for widget ${folder}/${templateId}:`,
+      error,
+    );
     return {};
   }
 };
 
 /**
  * Extracts widgets from GrapesJS content
- * 
+ *
  * @param {string} html GrapesJS HTML content
  * @returns {Array} Array of widget configurations
  */
 export const extractWidgetsFromContent = (html) => {
   if (!html) return [];
-  
+
   const widgets = [];
-  const tempDiv = document.createElement('div');
+  const tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
-  
+
   // Find all elements with data-widget attributes
-  const widgetElements = tempDiv.querySelectorAll('[data-widget-id]');
-  
-  widgetElements.forEach(element => {
-    const id = element.getAttribute('data-widget-id');
-    const folder = element.getAttribute('data-widget-type');
-    const templateId = element.getAttribute('data-widget-template');
-    
+  const widgetElements = tempDiv.querySelectorAll("[data-widget-id]");
+
+  widgetElements.forEach((element) => {
+    const id = element.getAttribute("data-widget-id");
+    const folder = element.getAttribute("data-widget-type");
+    const templateId = element.getAttribute("data-widget-template");
+
     // Extract serialized data attributes if they exist
     let data = {};
     try {
-      const serializedData = element.getAttribute('data-widget-data');
+      const serializedData = element.getAttribute("data-widget-data");
       if (serializedData) {
         data = JSON.parse(decodeURIComponent(serializedData));
       }
     } catch (error) {
       console.error(`Error parsing widget data for ${id}:`, error);
     }
-    
+
     widgets.push({
       id,
       folder,
       templateId,
-      data
+      data,
     });
   });
-  
+
   return widgets;
 };

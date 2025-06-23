@@ -3,6 +3,7 @@
 This is a Next.js project with Redux Toolkit integration, clean code architecture, and GrapesJS for visual website building.
 
 ## Author
+
 **John William**  
 Email: JohnWilliam9499@gmail.com
 
@@ -65,6 +66,7 @@ This project follows a clean code architecture with the following structure:
 ## GrapesJS Integration
 
 The project integrates GrapesJS, a web builder framework, with the following features:
+
 - Device switcher (desktop, tablet, mobile views)
 - Page manager for handling multiple pages
 - Custom blocks for easy section creation
@@ -75,6 +77,7 @@ The project integrates GrapesJS, a web builder framework, with the following fea
 ## Redux Implementation
 
 The project uses Redux Toolkit for state management with the following features:
+
 - Centralized store configuration
 - Slice-based state management
 - Async thunks for API calls
@@ -83,6 +86,7 @@ The project uses Redux Toolkit for state management with the following features:
 ## Font Management
 
 The project implements custom font management with:
+
 - DM Sans (multiple weights and optical sizes)
 - Genos font family
 - Font loading optimizations
@@ -148,4 +152,5 @@ This project is proprietary software developed by John William.
 © 2023-2024 John William. All rights reserved.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
 # cms-website-builder

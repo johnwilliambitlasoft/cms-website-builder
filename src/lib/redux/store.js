@@ -1,5 +1,5 @@
 // store/index.js
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import {
   persistStore,
   persistReducer,
@@ -9,10 +9,10 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage
-import configReducer from './config/config.slice';
-import initReducer from './init/init.slice';
+} from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage
+import configReducer from "./config/config.slice";
+import initReducer from "./init/init.slice";
 
 // Combine your reducers
 const rootReducer = combineReducers({
@@ -22,9 +22,9 @@ const rootReducer = combineReducers({
 
 // Configure redux-persist
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['config', 'init'], // Specify which reducers to persist
+  whitelist: ["config", "init"], // Specify which reducers to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

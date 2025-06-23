@@ -14,9 +14,7 @@ export default function RootLayout({ children }) {
       <body>
         <Header />
         <ReduxProvider>
-          <MessageProvider>
-            {children}
-          </MessageProvider>
+          <MessageProvider>{children}</MessageProvider>
         </ReduxProvider>
       </body>
     </html>

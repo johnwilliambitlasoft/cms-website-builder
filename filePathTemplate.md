@@ -71,5 +71,3 @@ rm -rf public/widgets/apply_offers
 rm -rf public/widgets/fare_summary
 rm -rf public/widgets/photo_gallery
 rm -rf public/widgets/contact_us
-
-

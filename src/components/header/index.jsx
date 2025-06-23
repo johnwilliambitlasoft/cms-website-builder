@@ -1,8 +1,6 @@
-'use client'
-import styles from './header.module.css';
-const Header = ({
-  Children = null
-}) => {
+"use client";
+import styles from "./header.module.css";
+const Header = ({ Children = null }) => {
   return (
     <div className={styles.header}>
       <div className={styles.logoContainer}>
@@ -15,7 +13,7 @@ const Header = ({
         <div className={"panel__history"}></div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

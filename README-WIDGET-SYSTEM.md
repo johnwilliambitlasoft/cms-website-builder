@@ -27,9 +27,9 @@ export const css = `
 `;
 
 export const metadata = {
-  id: 'widget_name',
-  name: 'Friendly Widget Name',
-  thumbnail: '/path/to/thumbnail.png'
+  id: "widget_name",
+  name: "Friendly Widget Name",
+  thumbnail: "/path/to/thumbnail.png",
 };
 ```
 

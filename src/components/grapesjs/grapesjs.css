@@ -62,30 +62,78 @@
   display: flex;
   flex-direction: column;
 }
-.panel_body .pages_list .page_item{
+.panel_body .pages_list .page_item {
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid var(--greyLight);
 }
-.panel_body .pages_list .page_item .page_item_content {
+.panel_body .pages_list .page_item .page_item_list {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 8px 16px;
   cursor: pointer;
 }
-.panel_body .pages_list .page_item .page_item_content:hover {
+.panel_body .pages_list .page_item .page_item_list:hover {
   background-color: var(--greyLight1);
 }
-.panel_body .pages_list .page_item .page_item_content .page_item_title {
+.panel_body .pages_list .page_item .page_item_list .page_item_title {
   font-weight: 500;
   font-size: 16px;
   color: var(--greyDark);
   flex: 1;
 }
 
-.panel_body .pages_list .page_item.active .page_item_content .page_item_actions .collapseIcon.expanded svg {
+.panel_body
+  .pages_list
+  .page_item.active
+  .page_item_list
+  .page_item_actions
+  .collapseIcon.expanded
+  svg {
   transform: rotate(180deg);
+}
+
+.panel_body .pages_list .page_item .page_child_item_list {
+  margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.panel_body .pages_list .page_item .page_child_item_list .page_child_item {
+  cursor: pointer;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px;
+  display: flex;
+}
+.panel_body
+  .pages_list
+  .page_item
+  .page_child_item_list
+  .page_child_item:hover {
+  background-color: var(--greyLight1);
+}
+.panel_body
+  .pages_list
+  .page_item
+  .page_child_item_list
+  .page_child_item
+  .page_child_item_title {
+  color: var(--greyDark);
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+}
+.panel_body
+  .pages_list
+  .page_item
+  .page_child_item_list
+  .page_child_item
+  .page_child_item_drag_icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .gjs-one-bg {
@@ -332,4 +380,3 @@
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
-
