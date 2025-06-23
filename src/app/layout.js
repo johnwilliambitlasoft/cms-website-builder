@@ -1,6 +1,7 @@
 import { Header } from "@/components";
 import "./globals.css";
-import { ReduxProvider } from "@/lib/redux/provider";
+import { ReduxProvider } from "@/lib/provider/StoreProvider";
+import { MessageProvider } from "@/lib/provider/MessageProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -13,7 +14,9 @@ export default function RootLayout({ children }) {
       <body>
         <Header />
         <ReduxProvider>
+          <MessageProvider>
             {children}
+          </MessageProvider>
         </ReduxProvider>
       </body>
     </html>

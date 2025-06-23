@@ -1,51 +1,37 @@
 'use client'
 import { useSelector, useDispatch } from 'react-redux';
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { useMessage } from '@/lib/provider/MessageProvider';
+import React, { useEffect, useRef} from 'react'
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import './grapesjs.css';
 import RightSidePanel from './rightSidePanel';
 import LeftSidePanel from './leftSidePanel';
 import { DesktopIcon, MobileIcon, UndoIcon, RedoIcon, PlayIcon, DragIcon } from './EditorSvg';
-import { setCurrentPage } from '@/lib/redux/init/init.slice';
+import { setCurrentPage, setPageData, addPage } from '@/lib/redux/init/init.slice';
+import { constructPageContent } from '@/lib/utils';
 const Grapesjs = () => {
   const dispatch = useDispatch();
+  const messageApi = useMessage();
   const editorRef = useRef(null);
   const containerRef = useRef(null);
   const currentPage = useSelector((state) => state.init.currentPage);
-  const pages = [
-    {
-      id: 'page1',
-      title: 'Home',
-      component: `<div class="section" style="padding: 20px; background-color: #fff;">
-                      <h1>Welcome to the Home Page 1</h1>
-                      <p>This is the content of the home page.</p>
-                    </div><div class="section" style="padding: 20px; background-color: #fff;">
-                      <h1>Welcome to the Home Page 2</h1>
-                      <p>This is the content of the home page.</p>
-                    </div>`,
-      styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
-    },
-    {
-      id: 'page2',
-      title: 'About',
-      component: `<div class="section" style="padding: 20px; background-color: #fff;">
-                      <h1>About Us</h1>
-                      <p>This is the content of the about page.</p>
-                    </div>`,
-      styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
-    }]
+
+  const pages = useSelector((state) => state.init.pages);
+
   const changePage = (pageId) => {
+    debugger
     if (editorRef.current) {
       const editor = editorRef.current;
       const page = pages.find(p => p.id === pageId);
       if (page) {
-        const currentPageIndex = pages.findIndex(p => p.id === currentPage);
-        if (currentPageIndex !== -1) {
-          pages[currentPageIndex].component = editor.getHtml();
-          pages[currentPageIndex].styles = editor.getCss();
-        }
+        dispatch(setPageData({
+          pageId: currentPage,
+          component: editor.getHtml(),
+          styles: editor.getCss()
+        }));
         debugger
+        messageApi.success(`Switched to page: ${page.title}`);
         editor.setComponents(page.component);
         editor.setStyle(page.styles);
         dispatch(setCurrentPage(pageId));
@@ -72,6 +58,23 @@ const Grapesjs = () => {
     }
 
   };
+
+  const addPanel = (editor, config) => {
+    if (editor.Panels.getPanel(config.id)) {
+      editor.Panels.removePanel(config.id);
+    }
+    // Add the panel with the provided configuration
+    if (!config.id) {
+      console.error('Panel configuration must include an id');
+      return;
+    }
+    if (!config.el) {
+      console.error('Panel configuration must include an element selector (el)');
+      return;
+    }
+    const panel = editor.Panels.addPanel(config);
+  }
+
 
   useEffect(() => {
     const editorConfig = {
@@ -114,19 +117,15 @@ const Grapesjs = () => {
 
     // Load the initial page
     const initialPage = pages.find(p => p.id === currentPage);
+    const initialPageContent = constructPageContent(initialPage.widgets);
+    debugger
     if (initialPage) {
-      editor.setComponents(initialPage.component);
-      editor.setStyle(initialPage.styles);
+      editor.setComponents(initialPageContent.component);
+      editor.setStyle(initialPageContent.styles);
     }
-
-    // Initialize the layer manager
-    setTimeout(() => {
-      editor.LayerManager.render();
-    }, 100);
-
     editorRef.current = editor;
 
-    editor.Panels.addPanel({
+    addPanel(editor, {
       id: 'panel-devices',
       el: '.panel__devices',
       buttons: [
@@ -146,7 +145,7 @@ const Grapesjs = () => {
       ],
     });
     // Add a panel for undo/redo buttons
-    editor.Panels.addPanel({
+    addPanel(editor, {
       id: 'panel-history',
       el: '.panel__history',
       buttons: [
@@ -198,7 +197,9 @@ const Grapesjs = () => {
 
   return (
     <div className='grapesjs'>
-      <LeftSidePanel onPageChange={changePage} currentPage={currentPage} pages={pages} />
+      <LeftSidePanel onPageChange={changePage} currentPage={currentPage} pages={pages} addPage={() => {
+        dispatch(addPage());
+      }} />
       <div className='editorPanel'>
         <div className="editor-container">
           <div ref={containerRef} className="editor-canvas">

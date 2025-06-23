@@ -1,82 +1,59 @@
-import { createSlice, current } from '@reduxjs/toolkit';
-
+import { createSlice } from '@reduxjs/toolkit';
+import { useMessage } from '@/lib/provider/MessageProvider';
+const defaultPage = {
+  id: '',
+  title: '',
+  component: '',
+  styles: ''
+}
 const initialState = {
   pages: [
     {
-      id: 'home_page',
-      title: 'Home page',
-      description: 'The homepage provides a seamless search experience, allowing users to find and book bus tickets effortlessly.',
-      component: '<div class="home-page">Welcome to the Home Page</div>',
-      styles: '.home-page { color: blue; }',
-      scripts: 'console.log("Welcome to the Bus Booking System")',
+      id: 'page1',
+      title: 'Home',
+      widgets: [
+        {
+          id: 'header_navigation',
+          folder: 'header_navigation',
+          templateId: 'header_navigation_1',
+          data: {
+            logoUrl: 'https://example.com/logo.png',
+            links: [
+              { text: 'Home', url: '/' },
+              { text: 'About Us', url: '/about' },
+              { text: 'Contact', url: '/contact' },
+              { text: 'Help', url: '/help' }
+            ]
+          }
+        },
+        {
+          id: 'banner_search_widget',
+          folder: 'banner_search_widget',
+          templateId: 'banner_search_widget_1',
+          data: {
+            bannerImageUrl: 'https://example.com/banner.jpg',
+          }
+        }
+      ],
+      component: `<div class="section" style="padding: 20px; background-color: #fff;">
+                      <h1>Welcome to the Home Page 1</h1>
+                      <p>This is the content of the home page.</p>
+                    </div><div class="section" style="padding: 20px; background-color: #fff;">
+                      <h1>Welcome to the Home Page 2</h1>
+                      <p>This is the content of the home page.</p>
+                    </div>`,
+      styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
     },
     {
-      id: 'search_results_page',
-      title: 'Search Results Page',
-      description: 'The search results page displays available bus options based on user queries, facilitating easy selection and booking.',
-      component: '<div id="comp2">Search Results</div>',
-      scripts: 'console.log("Displaying search results")',
-      styles: '#comp2 { color: blue }',
-    },
-    {
-      id: 'bookings_page',
-      title: 'Bookings Page',
-      description: 'The bookings page allows users to view and manage their bus reservations, ensuring a smooth travel experience.',
-      component: '<div id="comp3">Your Bookings</div>',
-      scripts: 'console.log("Managing bookings")',
-      styles: '#comp3 { color: green }',
-    },
-    {
-      id: 'payments_page',
-      title: 'Payments Page',
-      description: 'The payments page provides a secure platform for users to complete their bus ticket purchases.',
-      component: '<div id="comp4">Payment Gateway</div>',
-      scripts: 'console.log("Processing payment")',
-      styles: '#comp4 { color: purple }',
-    },
-    {
-      id: 'about_us',
-      title: 'About Us',
-      description: 'The About Us page offers insights into the company\'s mission, values, and history, building trust with users.',
-      component: '<div id="comp5">About Our Company</div>',
-      scripts: 'console.log("About Us section")',
-      styles: '#comp5 { color: orange }',
-    },
-    {
-      id: 'gallery',
-      title: 'Gallery',
-      description: 'The gallery showcases images of buses, destinations, and travel experiences, enhancing user engagement.',
-      component: '<div id="comp6">Gallery of Our Buses</div>',
-      scripts: 'console.log("Displaying gallery")',
-      styles: '#comp6 { color: pink }',
-    },
-    {
-      id: 'track_my_bus',
-      title: 'Track My Bus',
-      description: 'The Track My Bus feature allows users to monitor the real-time location of their booked buses, ensuring timely updates.',
-      component: '<div id="comp7">Track Your Bus</div>',
-      scripts: 'console.log("Tracking bus location")',
-      styles: '#comp7 { color: teal }',
-    },
-    {
-      id: 'manage_booking',
-      title: 'Manage Booking',
-      description: 'The Manage Booking page enables users to modify or cancel their bus reservations, providing flexibility and convenience.',
-      component: '<div id="comp8">Manage Your Booking</div>',
-      scripts: 'console.log("Managing booking details")',
-      styles: '#comp8 { color: brown }',
-
-    },
-    {
-      id: 'contact_us',
-      title: 'Contact Us',
-      description: 'The Contact Us page provides users with various ways to reach customer support, enhancing user satisfaction.',
-      component: '<div id="comp9">Get in Touch</div>',
-      scripts: 'console.log("Contacting support")',
-      styles: '#comp9 { color: gray }',
-    },
-  ],
-  currentPage: 'home_page',
+      id: 'page2',
+      title: 'About',
+      component: `<div class="section" style="padding: 20px; background-color: #fff;">
+                      <h1>About Us</h1>
+                      <p>This is the content of the about page.</p>
+                    </div>`,
+      styles: `.section { color: #333; font-family: Arial, sans-serif; font-size: 16px; }`
+    }],
+  currentPage: 'page1',
   currentWidget: [{
     id: 'header_navigation',
     title: 'Header Navigation',
@@ -90,16 +67,54 @@ const initialState = {
   ],
 }
 
+
 const initSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
     setCurrentPage: (state, action) => {
-      debugger;
       state.currentPage = action.payload;
     },
     setCurrentWidget: (state, action) => {
       state.currentWidget = action.payload;
+    },
+    setPageData: (state, action) => {
+      const { pageId, component, styles } = action.payload;
+      const pageIndex = state.pages.findIndex(page => page.id === pageId);
+      if (pageIndex !== -1) {
+        state.pages[pageIndex].component = component;
+        state.pages[pageIndex].styles = styles;
+      }
+    },
+    addPage: (state, action) => {
+      const newPage = { ...defaultPage, id: `page${state.pages.length + 1}`, title: `Page ${state.pages.length + 1}` };
+      if (action.payload && action.payload.title) {
+        newPage.title = action.payload.title;
+      }
+      state.pages.push(newPage);
+      state.currentPage = newPage.id; // Set the new page as current
+    },
+    deletePage: (state, action) => {
+      const pageId = action.payload;
+      state.pages = state.pages.filter(page => page.id !== pageId);
+      if (state.currentPage === pageId && state.pages.length > 0) {
+        state.currentPage = state.pages[0].id; // Set the first page as current if deleted
+      }
+    },
+    updatePageTitle: (state, action) => {
+      const { pageId, newTitle } = action.payload;
+      const pageIndex = state.pages.findIndex(page => page.id === pageId);
+      if (pageIndex !== -1) {
+        state.pages[pageIndex].title = newTitle;
+      }
+    },
+    updatePageContent: (state, action) => {
+      const { pageId, newComponent, newStyles } = action.payload;
+      const pageIndex = state.pages.findIndex(page => page.id === pageId);
+      if (pageIndex !== -1) {
+        state.pages[pageIndex].component = newComponent;
+        state.pages[pageIndex].styles = newStyles;
+      }
     }
   },
   extraReducers: (builder) => {
@@ -108,7 +123,12 @@ const initSlice = createSlice({
 
 export const {
   setCurrentPage,
-  setCurrentWidget
+  setCurrentWidget,
+  setPageData,
+  addPage,
+  deletePage,
+  updatePageTitle,
+  updatePageContent
 } = initSlice.actions;
 
 export default initSlice.reducer;

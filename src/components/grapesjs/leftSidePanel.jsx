@@ -6,7 +6,8 @@ import { AddIcon, CollapseIcon, ActionIcon, DragIcon } from './EditorSvg'
 const LeftSidePanel = ({
   pages = [],
   currentPage = '',
-  onPageChange
+  onPageChange,
+  addPage
 }) => {
   const [expandedPages, setExpandedPages] = useState({});
 
@@ -31,7 +32,7 @@ const LeftSidePanel = ({
         <span className='panel_header_title'>
           Pages
         </span>
-        <button className='add_page_btn' onClick={() => { }}>
+        <button className='add_page_btn' onClick={addPage}>
           Add new page
           <span className='add-icon' dangerouslySetInnerHTML={{ __html: AddIcon }}></span>
         </button>

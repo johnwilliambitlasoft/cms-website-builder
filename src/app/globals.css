@@ -142,3 +142,29 @@ body {
     color-scheme: dark;
   }
 } */
+
+/* antd Stack each message absolutely on top of each other */
+.ant-message-notice-wrapper {
+  position: absolute !important;
+  top: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.ant-message-notice-wrapper span {
+  white-space: nowrap !important;
+  width: auto !important;
+}
+
+.ant-message-notice-wrapper .ant-message-notice-content {
+  box-shadow: none !important;
+}
+
+.ant-message-notice-wrapper:first-child .ant-message-notice-content {
+  box-shadow:
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+}
