@@ -5,7 +5,6 @@ const WidgetsList = ({ widgets, updateWidgetOrder }) => {
   const [widgetsList, setWidgetsList] = useState(widgets);
   // if widgetsList is changed print a console log
   useEffect(() => {
-    debugger;
     if (JSON.stringify(widgets) !== JSON.stringify(widgetsList)) {
       console.log("Widgets list updated:", widgetsList);
       updateWidgetOrder(widgetsList);

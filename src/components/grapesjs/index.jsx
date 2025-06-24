@@ -21,6 +21,7 @@ import {
   setPageData,
   addPage,
   updateWidgetOrder,
+  setCurrentWidget,
 } from "@/lib/redux/init/init.slice";
 import { constructPageContent, extractWidgetsFromContent } from "@/lib/utils";
 import {
@@ -190,17 +191,136 @@ const Grapesjs = () => {
         layerManager: {
           appendTo: `.layer-container`,
           scrollLayers: true,
-          showWrapper: true,
+          showWrapper: false, // Don't show the wrapper
+          // Custom layer view configuration
+          custom: true,
+          // Only show primary layers (direct children of the wrapper)
+          setupLayers: (layers, component) => {
+            const wrapper = component.getWrapper();
+            const children = wrapper.components();
+
+            // Only include direct children of the wrapper/body
+            if (component === wrapper) {
+              return children.models;
+            }
+
+            // Return empty array for non-primary layers to prevent them from showing children
+            return [];
+          },
         },
         height: "100vh",
         width: "auto",
         fromElement: false, // Set to false so we can load our custom content
         storageManager: false,
         panels: { defaults: [] },
+        // Configure selection behavior
+        selectorManager: {
+          componentFirst: true,
+        },
       };
       const editor = grapesjs.init({
         container: containerRef.current,
         ...editorConfig,
+      });
+
+      // Configure selection constraints to only allow primary layer selection
+      editor.on("component:selected", (component) => {
+        // If the selected component is not a direct child of the body/wrapper,
+        // select its nearest parent that is a direct child of the body/wrapper
+        if (component) {
+          const parent = component.parent();
+          const wrapper = editor.getWrapper();
+
+          // If component is not a direct child of the wrapper/body
+          if (
+            parent &&
+            parent !== wrapper &&
+            wrapper.find("#" + parent.getId()).length > 0
+          ) {
+            // Find the top-level parent (direct child of wrapper)
+            let topLevelParent = component;
+            let currentParent = component;
+
+            while (
+              currentParent.parent() &&
+              currentParent.parent() !== wrapper
+            ) {
+              topLevelParent = currentParent.parent();
+              currentParent = currentParent.parent();
+            }
+
+            // Select the top-level parent instead
+            dispatch(
+              setCurrentWidget(
+                topLevelParent?.attributes?.attributes["data-widget-type"],
+              ),
+            );
+            editor.select(topLevelParent);
+            return;
+          }
+        }
+      });
+
+      // Disable selection of child elements in canvas
+      editor.on("component:mousedown", (component, event) => {
+        if (component && component.parent() !== editor.getWrapper()) {
+          // Find the top-level parent (direct child of wrapper)
+          let topLevelParent = component;
+          let currentParent = component;
+
+          while (
+            currentParent.parent() &&
+            currentParent.parent() !== editor.getWrapper()
+          ) {
+            topLevelParent = currentParent.parent();
+            currentParent = currentParent.parent();
+          }
+
+          // Prevent the default event handling
+          event.stopPropagation();
+
+          // Select the top-level parent instead
+          setTimeout(() => {
+            dispatch(
+              setCurrentWidget(
+                topLevelParent?.attributes?.attributes["data-widget-type"],
+              ),
+            );
+            editor.select(topLevelParent);
+          }, 0);
+        }
+      });
+
+      // Ensure layer manager selections follow the same rules
+      editor.on("layer:select", (component) => {
+        if (component) {
+          const wrapper = editor.getWrapper();
+
+          // If the component is not a direct child of the wrapper
+          if (component.parent() !== wrapper) {
+            // Find the top-level parent
+            let topLevelParent = component;
+            let currentParent = component;
+
+            while (
+              currentParent.parent() &&
+              currentParent.parent() !== wrapper
+            ) {
+              topLevelParent = currentParent.parent();
+              currentParent = currentParent.parent();
+            }
+
+            // Select the top-level parent instead
+            setTimeout(() => {
+              dispatch(
+                setCurrentWidget(
+                  topLevelParent?.attributes?.attributes["data-widget-type"],
+                ),
+              );
+              editor.select(topLevelParent);
+            }, 0);
+          }
+        }
       });
 
       // Register custom widget component

@@ -26,6 +26,38 @@
   height: 100%;
   position: relative;
 }
+
+/* Style for primary components (direct children of the body) */
+.gjs-selected {
+  outline: 2px solid var(--green) !important;
+  outline-offset: 1px;
+}
+
+/* Style for hover on primary components only */
+.gjs-hovered {
+  outline: 1px solid rgba(29, 136, 68, 0.5) !important; /* --green with opacity */
+  outline-offset: 1px;
+}
+
+/* Add cursor pointer only to primary components */
+#wrapper > * {
+  cursor: pointer !important;
+}
+
+/* Make nested components appear non-interactive */
+#wrapper > * * {
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+/* Keep form elements interactive for preview purposes */
+#wrapper input,
+#wrapper select,
+#wrapper textarea,
+#wrapper button {
+  pointer-events: all !important;
+}
+
 .sidePanel {
   width: 320px;
   min-width: 320px;
@@ -333,6 +365,7 @@
 .gjs-layer-title {
   font-weight: 500 !important;
   color: var(--greyDark) !important;
+  cursor: pointer;
 }
 
 .gjs-layer-count {
@@ -387,4 +420,30 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
+}
+
+.layer-manager-note {
+  padding: 8px;
+  background-color: var(--LightGreen);
+  color: var(--green);
+  font-size: 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Enhance the layer manager to highlight only primary layers */
+.gjs-layer-title {
+  cursor: pointer;
+}
+
+/* Make child layers visually different */
+.gjs-layer .gjs-layer .gjs-layer-title {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Hide expand/collapse controls for child layers */
+.gjs-layer .gjs-layer .gjs-layer-caret {
+  display: none;
 }
