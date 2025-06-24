@@ -447,3 +447,32 @@
 .gjs-layer .gjs-layer .gjs-layer-caret {
   display: none;
 }
+
+/* Style for the component toolbar */
+.gjs-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  width: 100%;
+  background-color: var(--none);
+}
+
+.gjs-toolbar .gjs-toolbar-items{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 4px;
+  background-color: var(--gjs-color-blue);
+}
+
+.gjs-toolbar .gjs-toolbar-items .gjs-toolbar-item{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  color: var(--white);
+}

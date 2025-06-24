@@ -56,3 +56,12 @@ export const ActionIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill=
 <circle cx="12" cy="18" r="2" fill="#323841"/>
 </svg>
 `;
+
+export const MoveUp = `<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.12 9.87988L8 3.77322L1.88 9.87988L-1.64355e-07 7.99988L8 -0.000115649L16 7.99988L14.12 9.87988Z" fill="white"/>
+</svg>
+`;
+export const MoveDown = `<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.88 0L8 6.10667L14.12 0L16 1.88L8 9.88L0 1.88L1.88 0Z" fill="white"/>
+</svg>
+`;

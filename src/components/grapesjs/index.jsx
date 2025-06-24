@@ -14,7 +14,8 @@ import {
   UndoIcon,
   RedoIcon,
   PlayIcon,
-  DragIcon,
+  MoveUp,
+  MoveDown,
 } from "./EditorSvg";
 import {
   setCurrentPage,
@@ -326,6 +327,41 @@ const Grapesjs = () => {
       // Register custom widget component
       //registerWidgetComponent(editor);
 
+      // Add custom buttons to the component toolbar
+      // Get the default component type
+      const defaultType = editor.DomComponents.getType('default');
+      // Get the existing toolbar configuration or initialize as an empty array
+      const existingToolbar = defaultType && 
+        defaultType.model && 
+        defaultType.model.prototype && 
+        defaultType.model.prototype.defaults && 
+        defaultType.model.prototype.defaults.toolbar || [];
+      
+      // Create a new default toolbar with our custom buttons added
+      editor.DomComponents.addType('default', {
+        model: {
+          defaults: {
+            toolbar: [
+              // Add existing toolbar items if available
+              ...(Array.isArray(existingToolbar) ? existingToolbar : []),
+              // Add our new buttons
+              {
+                id: 'move-up',
+                command: 'component-move-up',
+                attributes: { title: 'Move Up'},
+                label: `${MoveUp}`,
+              },
+              {
+                id: 'move-down',
+                command: 'component-move-down',
+                attributes: { title: 'Move Down'},
+                label: `${MoveDown}`,
+              }
+            ]
+          }
+        }
+      });
+      
       // Store editor instance in ref
       editorRef.current = editor;
 
@@ -413,6 +449,47 @@ const Grapesjs = () => {
 
       editor.Commands.add("set-device-mobile", {
         run: (editor) => editor.setDevice("mobile"),
+      });
+      
+      // Add custom commands for moving components up and down
+      editor.Commands.add("component-move-up", {
+        run: (editor) => {
+          const selectedComponent = editor.getSelected();
+          if (selectedComponent) {
+            const parent = selectedComponent.parent();
+            const collection = parent.components();
+            const index = collection.indexOf(selectedComponent);
+            
+            // Only move if it's not already at the top
+            if (index > 0) {
+              collection.remove(selectedComponent);
+              collection.add(selectedComponent, { at: index - 1 });
+              editor.select(selectedComponent);
+              return true;
+            }
+          }
+          return false;
+        }
+      });
+      
+      editor.Commands.add("component-move-down", {
+        run: (editor) => {
+          const selectedComponent = editor.getSelected();
+          if (selectedComponent) {
+            const parent = selectedComponent.parent();
+            const collection = parent.components();
+            const index = collection.indexOf(selectedComponent);
+            
+            // Only move if it's not already at the bottom
+            if (index < collection.length - 1) {
+              collection.remove(selectedComponent);
+              collection.add(selectedComponent, { at: index + 1 });
+              editor.select(selectedComponent);
+              return true;
+            }
+          }
+          return false;
+        }
       });
 
       // Listen for device change events and update UI accordingly
