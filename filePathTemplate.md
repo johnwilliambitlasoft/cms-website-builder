@@ -71,3 +71,60 @@ rm -rf public/widgets/apply_offers
 rm -rf public/widgets/fare_summary
 rm -rf public/widgets/photo_gallery
 rm -rf public/widgets/contact_us
+
+mkdir src/widgets
+mkdir src/widgets/header_navigation
+touch src/widgets/header_navigation/header_navigation.js
+mkdir src/widgets/banner_search_widget
+touch src/widgets/banner_search_widget/banner_search_widget.js
+mkdir src/widgets/features
+touch src/widgets/features/features.js
+mkdir src/widgets/amenities
+touch src/widgets/amenities/amenities.js
+mkdir src/widgets/offers
+touch src/widgets/offers/offers.js
+mkdir src/widgets/packages
+touch src/widgets/packages/packages.js
+mkdir src/widgets/testimonials
+touch src/widgets/testimonials/testimonials.js
+mkdir src/widgets/footer
+touch src/widgets/footer/footer.js
+mkdir src/widgets/route_search
+touch src/widgets/route_search/route_search.js
+mkdir src/widgets/search_result_list
+touch src/widgets/search_result_list/search_result_list.js
+mkdir src/widgets/filters
+touch src/widgets/filters/filters.js
+mkdir src/widgets/route_details
+touch src/widgets/route_details/route_details.js
+mkdir src/widgets/passenger_details
+touch src/widgets/passenger_details/passenger_details.js
+mkdir src/widgets/contact_details
+touch src/widgets/contact_details/contact_details.js
+mkdir src/widgets/apply_offers
+touch src/widgets/apply_offers/apply_offers.js
+mkdir src/widgets/fare_summary
+touch src/widgets/fare_summary/fare_summary.js
+mkdir src/widgets/photo_gallery
+touch src/widgets/photo_gallery/photo_gallery.js
+mkdir src/widgets/contact_us
+touch src/widgets/contact_us/contact_us.js
+
+header_navigation
+banner_search_widget
+features
+amenities
+offers
+packages
+testimonials
+footer
+route_search
+search_result_list
+filters
+route_details
+passenger_details
+contact_details
+apply_offers
+fare_summary
+photo_gallery
+contact_us

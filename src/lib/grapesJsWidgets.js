@@ -4,7 +4,7 @@
 import {
   getAvailableWidgets,
   getWidgetDefaultData,
-  loadPublicWidget,
+  loadWidget,
 } from "./utils";
 import { renderTemplate } from "./templateEngine";
 
@@ -112,7 +112,7 @@ export const registerWidgetComponent = (editor) => {
           }
 
           // Load the widget definition
-          const widgetDef = await loadPublicWidget(folder, templateId);
+          const widgetDef = await loadWidget(folder, templateId);
 
           // Render the HTML with data
           const html = renderTemplate(widgetDef.html, data);

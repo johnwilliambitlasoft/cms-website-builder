@@ -1,30 +1,84 @@
 import { renderTemplate } from "./templateEngine";
+import { widgetsTemplates } from "@/widgets/index.js";
 
 /**
- * Loads a widget from public/widgets folder
+ * Get widget templates from src/widgets directory
+ * 
+ * @returns {Object} Object containing all widget templates organized by widget type
+ */
+export const getWidgetsTemplates = () => {
+  return widgetsTemplates;
+};
+
+/**
+ * Get a specific widget template from src/widgets by widget type and template ID
+ * 
+ * @param {string} widgetType - Widget type (folder name like 'header_navigation')
+ * @param {string} templateId - Template identifier (optional, defaults to the widget type)
+ * @returns {Object|null} Widget template data or null if not found
+ */
+export const getWidgetTemplate = (widgetType, templateId = widgetType) => {
+  try {
+    // Check if the widget type exists in our imported templates
+    if (widgetsTemplates[widgetType]) {
+      const widgetModule = widgetsTemplates[widgetType];
+      
+      // First, try to get the specific template
+      if (templateId && widgetModule[`${templateId}`]) {
+        return widgetModule[`${templateId}`];
+      }
+      
+      // If not found, try widget_template format
+      if (templateId && widgetModule[`${widgetType}_${templateId}`]) {
+        return widgetModule[`${widgetType}_${templateId}`];
+      }
+      
+      // If still not found, look for default data
+      const defaultDataKey = `${widgetType}_default_data`;
+      if (widgetModule[defaultDataKey]) {
+        return widgetModule[defaultDataKey];
+      }
+      
+      // Last resort: try to find any template in the module
+      const templateKeys = Object.keys(widgetModule).filter(key => 
+        key.includes(widgetType) && !key.includes('default_data_type'));
+      
+      if (templateKeys.length > 0) {
+        console.log(`Using fallback template ${templateKeys[0]} for ${widgetType}/${templateId}`);
+        return widgetModule[templateKeys[0]];
+      }
+    }
+    
+    console.warn(`Widget template not found for ${widgetType}/${templateId}`);
+    return null;
+  } catch (error) {
+    console.error(`Error getting widget template for ${widgetType}/${templateId}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Loads a widget from src/widgets directory
  *
  * @param {string} folder - Widget folder name (e.g., 'header_navigation')
  * @param {string} templateId - Widget template ID (e.g., 'header_navigation_1')
  * @returns {Promise<Object>} Widget object with html, css, and metadata
  */
-export const loadPublicWidget = async (folder, templateId) => {
+export const loadWidget = async (folder, templateId) => {
   try {
-    const jsonPath = `/widgets/${folder}/${templateId}.json`;
-    const response = await fetch(jsonPath);
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch JSON: ${response.status} ${response.statusText}`,
-      );
+    debugger
+    // Get the widget from our imported templates
+    const srcTemplate = getWidgetTemplate(folder, templateId);
+    if (srcTemplate) {
+      console.log(`Loaded widget template from src/widgets: ${folder}/${templateId}`);
+      return srcTemplate;
     }
-
-    return await response.json();
-  } catch (jsonError) {
-    console.error(
-      `Failed to load widget (${folder}/${templateId}):`,
-      jsonError,
-    );
-    throw new Error(`Widget ${folder}/${templateId} not found in any format`);
+    
+    // If we couldn't find the template, throw an error
+    throw new Error(`Widget template ${folder}/${templateId} not found in src/widgets`);
+  } catch (error) {
+    console.error(`Failed to load widget (${folder}/${templateId}):`, error);
+    throw error;
   }
 };
 
@@ -35,6 +89,7 @@ export const loadPublicWidget = async (folder, templateId) => {
  * @returns {Object} - Object containing component HTML and CSS styles
  */
 export const constructPageContent = async (widgets) => {
+  debugger
   console.log("Constructing page content from widgets:", widgets);
 
   if (!Array.isArray(widgets) || widgets.length === 0) {
@@ -63,7 +118,8 @@ export const constructPageContent = async (widgets) => {
         console.log(`Loading widget: ${folder}/${templateId}`);
 
         // Load the widget definition
-        const widgetDefinition = await loadPublicWidget(folder, templateId);
+        debugger
+        const widgetDefinition = await loadWidget(folder, templateId);
 
         if (!widgetDefinition || !widgetDefinition.html) {
           console.warn(`Widget ${folder}/${templateId} has invalid format`);
@@ -244,4 +300,61 @@ export const extractWidgetsFromContent = (html) => {
   });
 
   return widgets;
+};
+
+/**
+ * Debug function to log available widget templates
+ * Useful for development to understand the structure of available widgets
+ */
+export const logAvailableWidgets = () => {
+  console.log("Available Widget Templates:");
+  
+  try {
+    Object.keys(widgetsTemplates).forEach(widgetType => {
+      console.log(`Widget Type: ${widgetType}`);
+      const widgetModule = widgetsTemplates[widgetType];
+      
+      // Log all exported keys from the widget module
+      const exportedKeys = Object.keys(widgetModule);
+      console.log(`  Exported keys: ${exportedKeys.join(', ')}`);
+      
+      // Log available templates specifically
+      const templateKeys = exportedKeys.filter(key => 
+        !key.includes('default_data_type') && !key.includes('default_data'));
+      
+      if (templateKeys.length > 0) {
+        console.log(`  Available templates: ${templateKeys.join(', ')}`);
+      } else {
+        console.log('  No templates available');
+      }
+    });
+  } catch (error) {
+    console.error("Error logging widget templates:", error);
+  }
+};
+
+/**
+ * Check if a widget module is properly defined
+ * 
+ * @param {string} widgetType - The widget type to check
+ * @returns {boolean} True if the widget is properly defined, false otherwise
+ */
+export const isWidgetDefined = (widgetType) => {
+  if (!widgetsTemplates[widgetType]) {
+    return false;
+  }
+  
+  const widgetModule = widgetsTemplates[widgetType];
+  const keys = Object.keys(widgetModule);
+  
+  // Check if widget has any exports
+  if (keys.length === 0) {
+    return false;
+  }
+  
+  // Check if it has at least one template
+  const hasTemplate = keys.some(key => 
+    !key.includes('default_data_type') && key.includes(widgetType));
+  
+  return hasTemplate;
 };
