@@ -23,7 +23,6 @@ import {
   addPage,
   updateWidgetOrder,
   setCurrentWidget,
-  updatePageTitle
 } from "@/lib/redux/init/init.slice";
 import { constructPageContent, extractWidgetsFromContent } from "@/lib/utils";
 import {
@@ -38,60 +37,6 @@ const Grapesjs = () => {
   const currentPage = useSelector((state) => state.init.currentPage);
   const pages = useSelector((state) => state.init.pages);
   const [loading, setLoading] = useState(true);
-
-  // const changePage = async (pageId) => {
-  //   if (!editorRef.current) return;
-
-  //   const editor = editorRef.current;
-  //   const page = pages.find(p => p.id === pageId);
-
-  //   if (page) {
-  //     try {
-  //       // Save current page before switching
-  //       const currentHtml = editor.getHtml();
-  //       const currentCss = editor.getCss();
-
-  //       // Extract widgets from current page content
-  //       const extractedWidgets = extractWidgetsFromContent(currentHtml);
-
-  //       // Save both raw HTML/CSS and extracted widgets
-  //       dispatch(setPageData({
-  //         pageId: currentPage,
-  //         component: currentHtml,
-  //         styles: currentCss,
-  //         widgets: extractedWidgets
-  //       }));
-
-  //       // Show success message
-  //       messageApi.success(`Switched to page: ${page.title}`);
-
-  //       // Load new page
-  //       if (page.widgets?.length > 0) {
-  //         // If the page has widget configurations, render them
-  //         try {
-  //           const pageContent = await constructPageContent(page.widgets);
-  //           editor.setComponents(pageContent.component);
-  //           editor.setStyle(pageContent.styles);
-  //         } catch (error) {
-  //           console.error('Error constructing page content:', error);
-  //           // Fall back to raw HTML/CSS if widget rendering fails
-  //           editor.setComponents(page.component || '');
-  //           editor.setStyle(page.styles || '');
-  //         }
-  //       } else {
-  //         // Otherwise just load the raw HTML/CSS
-  //         editor.setComponents(page.component || '');
-  //         editor.setStyle(page.styles || '');
-  //       }
-
-  //       // Update current page in state
-  //       dispatch(setCurrentPage(pageId));
-  //     } catch (error) {
-  //       console.error('Error changing page:', error);
-  //       messageApi.error('Failed to switch page');
-  //     }
-  //   }
-  // };
 
   const changePage = async (pageId) => {
     if (editorRef.current) {
@@ -146,7 +91,7 @@ const Grapesjs = () => {
       );
       return;
     }
-    const panel = editor.Panels.addPanel(config);
+    editor.Panels.addPanel(config);
   };
 
   const contentRender = async (widget) => {
