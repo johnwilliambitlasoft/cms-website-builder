@@ -334,8 +334,10 @@ const Grapesjs = () => {
       <div className={`editorPanel`}>
         <div className={`editor-container ${loading ? "loading" : ""}`}>
           {loading && <Loader />}
-          <div ref={containerRef} className={`editor-canvas ${loading ? "hide" : ""}`}>
-          </div>
+          <div
+            ref={containerRef}
+            className={`editor-canvas ${loading ? "hide" : ""}`}
+          ></div>
         </div>
       </div>
       <RightSidePanel />

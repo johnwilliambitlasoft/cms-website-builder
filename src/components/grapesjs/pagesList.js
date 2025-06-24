@@ -1,13 +1,13 @@
-import React from 'react'
+import React from "react";
 import { AddIcon, CollapseIcon, ActionIcon, DragIcon } from "./EditorSvg";
-import WidgetsList from './widgetsList';
+import WidgetsList from "./widgetsList";
 const PagesList = ({
   page,
   currentPage,
   onPageChange,
   expandedPages,
   togglePageExpand,
-  updateWidgetOrder
+  updateWidgetOrder,
 }) => {
   return (
     <div
@@ -36,16 +36,14 @@ const PagesList = ({
           ></span>
         </div>
       </div>
-      {currentPage == page.id &&
-        page.widgets &&
-        page.widgets.length > 0 && (
-          <WidgetsList
-            widgets={page.widgets}
-            updateWidgetOrder={updateWidgetOrder}
-          />
-        )}
+      {currentPage == page.id && page.widgets && page.widgets.length > 0 && (
+        <WidgetsList
+          widgets={page.widgets}
+          updateWidgetOrder={updateWidgetOrder}
+        />
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default PagesList
+export default PagesList;

@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import { DragIcon } from "./EditorSvg";
-const WidgetsList = ({
-  widgets,
-  updateWidgetOrder
-}) => {
+const WidgetsList = ({ widgets, updateWidgetOrder }) => {
   const [widgetsList, setWidgetsList] = useState(widgets);
   // if widgetsList is changed print a console log
   useEffect(() => {
-    debugger
+    debugger;
     if (JSON.stringify(widgets) !== JSON.stringify(widgetsList)) {
       console.log("Widgets list updated:", widgetsList);
       updateWidgetOrder(widgetsList);
@@ -17,7 +14,8 @@ const WidgetsList = ({
 
   return (
     <div className="page_child_item_list">
-      <ReactSortable list={widgetsList}
+      <ReactSortable
+        list={widgetsList}
         // onEnd={(evt) => {
         //   const newIndex = evt.newIndex;
         //   const oldIndex = evt.oldIndex;
@@ -27,12 +25,13 @@ const WidgetsList = ({
         //   updateWidgetOrder(updatedList);
         //   setWidgetsList(updatedList);
         // }}
-        setList={(newList) => setWidgetsList(newList)} className="widgets_list" animation={150} handle=".page_child_item_drag_icon"  >
+        setList={(newList) => setWidgetsList(newList)}
+        className="widgets_list"
+        animation={150}
+        handle=".page_child_item_drag_icon"
+      >
         {widgetsList.map((widget, widgetIndex) => (
-          <div
-            key={widget.id || widgetIndex}
-            className="page_child_item"
-          >
+          <div key={widget.id || widgetIndex} className="page_child_item">
             <span className="page_child_item_title">
               {widget.title || `Widget ${widgetIndex + 1}`}
             </span>
@@ -44,7 +43,7 @@ const WidgetsList = ({
         ))}
       </ReactSortable>
     </div>
-  )
-}
+  );
+};
 
 export default WidgetsList;
