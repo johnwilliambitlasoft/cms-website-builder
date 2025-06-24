@@ -23,6 +23,7 @@ import {
   addPage,
   updateWidgetOrder,
   setCurrentWidget,
+  updatePageTitle
 } from "@/lib/redux/init/init.slice";
 import { constructPageContent, extractWidgetsFromContent } from "@/lib/utils";
 import {
@@ -526,6 +527,15 @@ const Grapesjs = () => {
             }),
           );
           contentRender(newOrder);
+        }}
+        updatePageTitle={(newTitle) => {
+          setLoading(true);
+          dispatch(
+            updatePageTitle({
+              pageId: currentPage,
+              newTitle: newTitle,
+            }),
+          );
         }}
       />
       <div className={`editorPanel`}>

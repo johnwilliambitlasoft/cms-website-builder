@@ -9,6 +9,7 @@ const LeftSidePanel = ({
   onPageChange,
   addPage,
   updateWidgetOrder,
+  updatePageTitle,
 }) => {
   const [expandedPages, setExpandedPages] = useState({});
 
@@ -51,6 +52,7 @@ const LeftSidePanel = ({
                 expandedPages={expandedPages}
                 togglePageExpand={togglePageExpand}
                 updateWidgetOrder={updateWidgetOrder}
+                updatePageTitle ={updatePageTitle}
               />
             ))}
         </div>

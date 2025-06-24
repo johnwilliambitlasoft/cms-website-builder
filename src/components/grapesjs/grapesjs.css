@@ -123,6 +123,16 @@
   color: var(--greyDark);
   flex: 1;
 }
+.panel_body .pages_list .page_item .page_item_list .page_item_input {
+  font-weight: 500;
+  font-size: 16px;
+  border: 1px solid var(--greyLight);
+  border-radius: 4px;
+  padding: 4px 8px;
+  background-color: var(--white);
+  color: var(--greyDark);
+  flex: 1;
+}
 
 .panel_body
   .pages_list

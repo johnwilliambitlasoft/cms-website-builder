@@ -1,4 +1,5 @@
-import React from "react";
+'use client';
+import React, { useState } from "react";
 import { AddIcon, CollapseIcon, ActionIcon, DragIcon } from "./EditorSvg";
 import WidgetsList from "./widgetsList";
 const PagesList = ({
@@ -8,7 +9,9 @@ const PagesList = ({
   expandedPages,
   togglePageExpand,
   updateWidgetOrder,
+  updatePageTitle
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   return (
     <div
       key={page.id || index}
@@ -16,16 +19,36 @@ const PagesList = ({
     >
       <div
         className="page_item_list"
-        onClick={() => {
+        onClick={(e) => {
           onPageChange(page.id);
+          e.stopPropagation();
         }}
       >
-        <span className={"page_item_title"}>{page.title}</span>
+        {isEditing ? (<input
+          type="text"
+          className="page_item_input"
+          value={page.title}
+          onChange={(e) => {
+            debugger
+            updatePageTitle(e.target.value);
+            e.stopPropagation();
+          }}
+          onBlur={() => setIsEditing(false)}
+        />) : (
+          <span className={"page_item_title"}
+            onClick={(e) => {
+              setIsEditing(true);
+              e.stopPropagation();
+            }}>{page.title}</span>
+        )}
         <div className={"page_item_actions"}>
           <span
             className={`page_item_icon collapseIcon ${expandedPages[page.id] ? "expanded" : ""}`}
             dangerouslySetInnerHTML={{ __html: CollapseIcon }}
-            onClick={(e) => togglePageExpand(e, page.id)}
+            onClick={(e) => {
+              onPageChange(page.id);
+              e.stopPropagation();
+            }}
           ></span>
           <span
             className={"page_item_icon"}
@@ -36,13 +59,15 @@ const PagesList = ({
           ></span>
         </div>
       </div>
-      {currentPage == page.id && page.widgets && page.widgets.length > 0 && (
-        <WidgetsList
-          widgets={page.widgets}
-          updateWidgetOrder={updateWidgetOrder}
-        />
-      )}
-    </div>
+      {
+        currentPage == page.id && page.widgets && page.widgets.length > 0 && (
+          <WidgetsList
+            widgets={page.widgets}
+            updateWidgetOrder={updateWidgetOrder}
+          />
+        )
+      }
+    </div >
   );
 };
 

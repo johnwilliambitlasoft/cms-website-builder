@@ -81,7 +81,11 @@ const initSlice = createSlice({
   initialState,
   reducers: {
     setCurrentPage: (state, action) => {
-      state.currentPage = action.payload;
+      if (state.currentPage === action.payload) {
+        state.currentPage = "";
+      } else {
+        state.currentPage = action.payload;
+      }
     },
     setCurrentWidget: (state, action) => {
       state.currentWidget = action.payload;
@@ -157,7 +161,7 @@ const initSlice = createSlice({
       }
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => { },
 });
 
 export const {
