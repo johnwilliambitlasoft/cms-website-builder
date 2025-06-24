@@ -7,6 +7,7 @@ import "grapesjs/dist/css/grapes.min.css";
 import "./grapesjs.css";
 import RightSidePanel from "./rightSidePanel";
 import LeftSidePanel from "./leftSidePanel";
+import { Loader } from "@/components";
 import {
   DesktopIcon,
   MobileIcon,
@@ -33,6 +34,7 @@ const Grapesjs = () => {
   const containerRef = useRef(null);
   const currentPage = useSelector((state) => state.init.currentPage);
   const pages = useSelector((state) => state.init.pages);
+  const [loading, setLoading] = useState(true);
 
   // const changePage = async (pageId) => {
   //   if (!editorRef.current) return;
@@ -144,9 +146,25 @@ const Grapesjs = () => {
     const panel = editor.Panels.addPanel(config);
   };
 
+  const contentRender = async (widget) => {
+    try {
+      const widgetContent = await constructPageContent(widget);
+      if (editorRef.current) {
+        editorRef.current.setComponents(widgetContent.component);
+        editorRef.current.setStyle(widgetContent.styles);
+      } else {
+        console.warn("Editor instance is not available.");
+      }
+    } catch (error) {
+      console.error("Error rendering widget content:", error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     // Initialize editor with async setup
     const initializeEditor = async () => {
+      setLoading(true);
       const editorConfig = {
         storageManager: {
           type: "local",
@@ -192,7 +210,7 @@ const Grapesjs = () => {
       editorRef.current = editor;
 
       // Initialize with available widget blocks
-      //registerWidgetBlocks(editor);
+      registerWidgetBlocks(editor);
 
       // Load the initial page
       const initialPage = pages.find((p) => p.id === currentPage);
@@ -282,10 +300,14 @@ const Grapesjs = () => {
         const deviceModel = editor.getDevice();
         setDeviceActive(deviceModel);
       });
+
+      setLoading(false);
     };
     // Execute the async initialization
     if (editorRef.current == null) {
       initializeEditor();
+    } else {
+      setLoading(false);
     }
   });
 
@@ -299,17 +321,21 @@ const Grapesjs = () => {
           dispatch(addPage());
         }}
         updateWidgetOrder={(newOrder) => {
+          setLoading(true);
           dispatch(
             updateWidgetOrder({
               pageId: currentPage,
               newOrder: newOrder,
             }),
           );
+          contentRender(newOrder);
         }}
       />
-      <div className="editorPanel">
-        <div className="editor-container">
-          <div ref={containerRef} className="editor-canvas"></div>
+      <div className={`editorPanel`}>
+        <div className={`editor-container ${loading ? "loading" : ""}`}>
+          {loading && <Loader />}
+          <div ref={containerRef} className={`editor-canvas ${loading ? "hide" : ""}`}>
+          </div>
         </div>
       </div>
       <RightSidePanel />
