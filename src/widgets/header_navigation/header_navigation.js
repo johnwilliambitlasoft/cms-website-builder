@@ -1,5 +1,3 @@
-import { Categories } from "grapesjs"
-
 export const header_navigation_default_data_type = {
   logoUrl: "url",
   links: [
@@ -26,6 +24,12 @@ export const header_navigation_default_data = {
       url: "/contact"
     }
   ]
+}
+
+const defaultMetadata = {
+  folder: "header_navigation",
+  title: "Header Navigation",
+  description: "A customizable header navigation bar with logo and links.",
 }
 
 export const header_navigation_1 = {
@@ -91,9 +95,8 @@ export const header_navigation_1 = {
 }`,
   metadata: {
     id: "header_navigation_1",
-    category: "header_navigation",
-    title: "Header Navigation",
+    templateId: "header_navigation_1",
     thumbnail: "/assets/svg/header_navigation.svg",
-    description: "A customizable header navigation bar with logo and links.",
+    ...defaultMetadata,
   }
 }

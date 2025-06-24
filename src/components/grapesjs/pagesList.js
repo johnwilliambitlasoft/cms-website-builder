@@ -29,7 +29,6 @@ const PagesList = ({
           className="page_item_input"
           value={page.title}
           onChange={(e) => {
-            debugger
             updatePageTitle(e.target.value);
             e.stopPropagation();
           }}

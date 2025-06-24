@@ -5,7 +5,7 @@ export const hero_banner_1_default_data_type = {
   buttonUrl: "url",
   imageUrl: "url",
   imageAlt: "url"
-  
+
 }
 
 export const hero_banner_1_default_data = {
@@ -15,6 +15,12 @@ export const hero_banner_1_default_data = {
   buttonUrl: "/get-started",
   imageUrl: "https://example.com/hero-image.jpg",
   imageAlt: "Hero Image"
+}
+
+const defaultMetadata = {
+  folder: "hero_banner",
+  title: "Hero Banner",
+  description: "A customizable hero banner with title, subtitle, and call-to-action button.",
 }
 
 export const hero_banner_1 = {
@@ -106,9 +112,8 @@ export const hero_banner_1 = {
   `,
   metadata: {
     id: "hero_banner_1",
-    category: "hero_banner",
-    title: "Hero Banner",
+    templateId: "hero_banner_1",
     thumbnail: "/assets/svg/hero_banner.svg",
-    description: "A customizable hero banner with title, subtitle, and call-to-action button.",
+    ...defaultMetadata,
   }
 }

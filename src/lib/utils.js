@@ -66,7 +66,6 @@ export const getWidgetTemplate = (widgetType, templateId = widgetType) => {
  */
 export const loadWidget = async (folder, templateId) => {
   try {
-    debugger
     // Get the widget from our imported templates
     const srcTemplate = getWidgetTemplate(folder, templateId);
     if (srcTemplate) {
@@ -89,7 +88,6 @@ export const loadWidget = async (folder, templateId) => {
  * @returns {Object} - Object containing component HTML and CSS styles
  */
 export const constructPageContent = async (widgets) => {
-  debugger
   console.log("Constructing page content from widgets:", widgets);
 
   if (!Array.isArray(widgets) || widgets.length === 0) {
@@ -118,7 +116,6 @@ export const constructPageContent = async (widgets) => {
         console.log(`Loading widget: ${folder}/${templateId}`);
 
         // Load the widget definition
-        debugger
         const widgetDefinition = await loadWidget(folder, templateId);
 
         if (!widgetDefinition || !widgetDefinition.html) {

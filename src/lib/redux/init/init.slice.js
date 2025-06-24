@@ -19,6 +19,8 @@ const initialState = {
           title: "Header Navigation",
           folder: "header_navigation",
           templateId: "header_navigation_1",
+          thumbnail: "/assets/svg/header_navigation.svg",
+          description: "A customizable header navigation bar with logo and links.",
           data: {
             logoUrl: "https://example.com/logo.png",
             links: [
@@ -34,6 +36,9 @@ const initialState = {
           folder: "hero_banner",
           title: "Hero Banner",
           templateId: "hero_banner_1",
+          thumbnail: "/assets/svg/hero_banner.svg",
+          description:
+            "A hero banner with a title, subtitle, button, and image. Perfect for showcasing your main message.",
           data: {
             title: "Build Beautiful Websites",
             subtitle:
@@ -57,6 +62,9 @@ const initialState = {
           folder: "hero_banner",
           title: "Hero Banner",
           templateId: "hero_banner_1",
+          thumbnail: "/assets/svg/hero_banner.svg",
+          description:
+            "A hero banner with a title, subtitle, button, and image. Perfect for showcasing your main message.",
           data: {
             title: "Build Beautiful Websites",
             subtitle:
