@@ -125,6 +125,7 @@ export const constructPageContent = async (widgets) => {
 
         // Render the HTML template with provided data
         const renderedHtml = renderTemplate(widgetDefinition.html, data);
+        const renderedStyles = renderTemplate(widgetDefinition.css, data);
 
         // Add data-widget attributes for editor identification
         const widgetWrapper = `
@@ -139,7 +140,7 @@ export const constructPageContent = async (widgets) => {
         `;
 
         component += widgetWrapper;
-        styles += widgetDefinition.css || "";
+        styles += renderedStyles || "";
 
         console.log(`Successfully rendered widget: ${folder}/${templateId}`);
       } catch (widgetError) {
@@ -355,4 +356,168 @@ export const isWidgetDefined = (widgetType) => {
     !key.includes('default_data_type') && key.includes(widgetType));
 
   return hasTemplate;
+};
+
+/**
+ * Generate a customization form for a widget based on its schema
+ * 
+ * @param {Object} widget - Widget definition with schema
+ * @param {Object} currentData - Current widget data for default values
+ * @returns {Object} Form configuration for the widget
+ */
+export const generateWidgetForm = (widget, currentData = {}) => {
+  // Get the schema from the widget
+  const schema = widget.metadata?.editorSchema
+    ? widgetsTemplates[widget.folder][widget.metadata.editorSchema]
+    : null;
+
+  if (!schema) {
+    console.warn(`No schema found for widget ${widget.folder}/${widget.templateId}`);
+    return { sections: [] };
+  }
+
+  // Get customization sections from metadata or create default
+  const customizableSections = widget.metadata?.customizableSections || [
+    { id: 'content', title: 'Content', fields: Object.keys(schema) }
+  ];
+
+  // Build form sections
+  const formSections = customizableSections.map(section => {
+    return {
+      id: section.id,
+      title: section.title,
+      fields: generateFieldsFromSchema(schema, section.fields, currentData)
+    };
+  });
+
+  return {
+    sections: formSections
+  };
+};
+
+/**
+ * Generate form fields based on schema and current data
+ * 
+ * @param {Object} schema - The widget schema
+ * @param {Array} fieldPaths - Field paths to include
+ * @param {Object} currentData - Current widget data
+ * @returns {Array} Array of field configurations
+ */
+export const generateFieldsFromSchema = (schema, fieldPaths, currentData) => {
+  const fields = [];
+
+  fieldPaths.forEach(path => {
+    // Handle nested paths (e.g., "styles.backgroundColor")
+    const pathParts = path.split('.');
+    const fieldName = pathParts[0];
+
+    // Get field schema
+    const fieldSchema = schema[fieldName];
+    if (!fieldSchema) return;
+
+    // Get current value
+    let currentValue = currentData[fieldName];
+    if (pathParts.length > 1 && currentValue) {
+      for (let i = 1; i < pathParts.length; i++) {
+        if (currentValue) {
+          currentValue = currentValue[pathParts[i]];
+        }
+      }
+    }
+
+    // Generate field based on type
+    if (fieldSchema.type === 'array') {
+      // Array fields (repeatable)
+      fields.push({
+        id: path,
+        type: 'array',
+        label: fieldSchema.label || path,
+        description: fieldSchema.description,
+        minItems: fieldSchema.minItems || 0,
+        maxItems: fieldSchema.maxItems,
+        currentItems: Array.isArray(currentValue) ? currentValue : [],
+        addItemLabel: fieldSchema.addItemLabel || 'Add Item',
+        itemLabel: fieldSchema.itemLabel || 'Item',
+        itemFields: fieldSchema.item ? Object.keys(fieldSchema.item).map(itemField => {
+          const itemSchema = fieldSchema.item[itemField];
+          return {
+            id: itemField,
+            type: itemSchema.type || 'text',
+            label: itemSchema.label || itemField,
+            placeholder: itemSchema.placeholder || '',
+            required: itemSchema.validation?.required || false,
+            maxLength: itemSchema.validation?.maxLength,
+          };
+        }) : []
+      });
+    } else if (pathParts.length > 1) {
+      // Handle nested properties (usually style properties)
+      const nestedType = guessFieldTypeFromValue(currentValue);
+      fields.push({
+        id: path,
+        type: nestedType,
+        label: pathParts.slice(1).join(' '), // Convert camelCase to space-separated
+        value: currentValue,
+        placeholder: `Enter ${pathParts.slice(1).join(' ')}`,
+      });
+    } else {
+      // Regular fields
+      fields.push({
+        id: path,
+        type: fieldSchema.type || 'text',
+        label: fieldSchema.label || path,
+        description: fieldSchema.description,
+        placeholder: fieldSchema.placeholder || '',
+        required: fieldSchema.validation?.required || false,
+        maxLength: fieldSchema.validation?.maxLength,
+        value: currentValue
+      });
+    }
+  });
+
+  return fields;
+};
+
+/**
+ * Guess the field type based on its value
+ * 
+ * @param {any} value - The field value
+ * @returns {string} Guessed field type
+ */
+export const guessFieldTypeFromValue = (value) => {
+  if (value === null || value === undefined) {
+    return 'text';
+  }
+
+  // Check if it's a color
+  if (typeof value === 'string' && (
+    value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl')
+  )) {
+    return 'color';
+  }
+
+  // Check if it's a URL
+  if (typeof value === 'string' && (
+    value.startsWith('http') || value.startsWith('/') || value.includes('.com')
+  )) {
+    return 'url';
+  }
+
+  // Check if it's a long text
+  if (typeof value === 'string' && value.length > 100) {
+    return 'textarea';
+  }
+
+  // Boolean values
+  if (typeof value === 'boolean') {
+    return 'checkbox';
+  }
+
+  // Numbers
+  if (typeof value === 'number') {
+    return 'number';
+  }
+
+  // Default to text
+  return 'text';
 };

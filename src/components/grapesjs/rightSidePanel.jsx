@@ -6,7 +6,7 @@ const RightSidePanel = () => {
   return (
     <div className="rightPanel sidePanel">
       <div className="panel_header">
-        <span className="panel_header_title">Edit Widget</span>
+        <span className="panel_header_title">Layer</span>
       </div>
       <div className="panel_body">
         <div className={`layer-container`}>
@@ -14,6 +14,9 @@ const RightSidePanel = () => {
             Only primary layers are selectable
           </div>
         </div>
+      </div>
+      <div className="panel_header">
+        <span className="panel_header_title">Edit Widget</span>
       </div>
     </div>
   );

@@ -116,9 +116,11 @@ export const registerWidgetComponent = (editor) => {
 
           // Render the HTML with data
           const html = renderTemplate(widgetDef.html, data);
+          const css = renderTemplate(widgetDef.css, defaultData);
 
           // Set the rendered HTML as content
           this.components(html);
+          this.setStyle(css);
 
           // Set the widget attributes for later extraction
           this.setAttributes({

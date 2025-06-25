@@ -1,0 +1,133 @@
+/* Widget Preview Page Styles */
+
+.previewPage {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-dm-sans);
+}
+
+/* Container for the preview */
+.previewContainer {
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Only visible in development mode */
+.infoBar {
+  background-color: var(--greyLight1);
+  border-bottom: 1px solid var(--greyLight);
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--greyDark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.infoBarHidden {
+  transform: translateY(-100%);
+}
+
+.infoToggle {
+  position: fixed;
+  top: 0;
+  right: 20px;
+  background: var(--greyLight1);
+  border: 1px solid var(--greyLight);
+  border-top: 0;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+}
+
+.infoToggleVisible {
+  transform: translateY(0);
+}
+
+.infoLink {
+  color: var(--green);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--greyLight);
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.infoLink:hover {
+  background: var(--LightGreen);
+}
+
+.infoButtons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dataPanel {
+  position: fixed;
+  right: -400px;
+  top: 0;
+  width: 380px;
+  height: 100%;
+  background: var(--white);
+  border-left: 1px solid var(--greyLight);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+.dataPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.dataPanelHeader h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+.dataPanelHeader button {
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.dataPanelVisible {
+  right: 0;
+}
+
+.dataPanelContent {
+  background: var(--greyLight1);
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+}
+
+.errorMessage {
+  padding: 20px;
+  color: var(--red);
+  font-family: var(--font-dm-sans);
+}
+
+.notFoundMessage {
+  padding: 20px;
+  font-family: var(--font-dm-sans);
+  color: var(--grey);
+}

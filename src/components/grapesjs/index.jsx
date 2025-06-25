@@ -125,7 +125,8 @@ const Grapesjs = () => {
             {
               id: "desktop",
               name: "Desktop",
-              width: "", // Full width for desktop
+              // width: "1980px", // Full width for desktop
+              widthMedia: "1980px", // Media query for desktop
             },
             {
               id: "mobile",

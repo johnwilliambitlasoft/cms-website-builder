@@ -66,11 +66,26 @@ function processLoops(template, data) {
 }
 
 /**
- * Process {{variable}} replacements
+ * Process {{variable}} replacements, including nested paths like {{styles.color}}
  */
 function processVariables(template, data) {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-    return data[key] !== undefined ? data[key] : "";
+  return template.replace(/\{\{([\w\.]+)\}\}/g, (_, path) => {
+    if (path.includes('.')) {
+      // Handle nested paths (e.g., styles.backgroundColor)
+      const parts = path.split('.');
+      let value = data;
+      
+      // Navigate the object using the path parts
+      for (const part of parts) {
+        if (value === undefined || value === null) return "";
+        value = value[part];
+      }
+      
+      return value !== undefined ? value : "";
+    } else {
+      // Simple variable
+      return data[path] !== undefined ? data[path] : "";
+    }
   });
 }
 
