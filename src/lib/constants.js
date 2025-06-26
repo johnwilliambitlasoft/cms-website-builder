@@ -5,7 +5,7 @@
 export const scriptFiles = [
   // Main application script (will be renamed to main.js)
   { src: "src/javascript/mainApplication.js", dest: "main.js" },
-  
+
   // Utility scripts to include
   { src: "src/javascript/reducer.js", dest: "reducer.js" },
   { src: "src/javascript/bookingCalculation.js", dest: "bookingCalculation.js" },
@@ -18,4 +18,5 @@ export const scriptFiles = [
   { src: "src/javascript/user.js", dest: "user.js" },
   { src: "src/javascript/utils.js", dest: "utils.js" },
   { src: "src/javascript/api.js", dest: "api.js" },
+  { src: "src/javascript/store.js", dest: "store.js" }
 ];
