@@ -86,6 +86,24 @@ body {
   overflow-x: hidden;
 }
 
+/* Disable zoom styles */
+html, body {
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
+  -webkit-touch-action: manipulation;
+  -webkit-text-size-adjust: 100%; /* Prevent automatic text resizing on iOS */
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  max-width: 100%; /* Ensure content doesn't cause horizontal scroll */
+  overscroll-behavior: none; /* Prevent bounce effects that can cause zoom issues */
+}
+
+* {
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
 body {
   color: var(--greyDark);
   background: var(--greyLight);
