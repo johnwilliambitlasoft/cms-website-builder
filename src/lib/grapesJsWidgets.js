@@ -1,11 +1,7 @@
 /**
  * GrapesJS widget integration helpers
  */
-import {
-  getAvailableWidgets,
-  getWidgetDefaultData,
-  loadWidget,
-} from "./utils";
+import { getAvailableWidgets, getWidgetDefaultData, loadWidget } from "./utils";
 import { renderTemplate } from "./templateEngine";
 
 /**

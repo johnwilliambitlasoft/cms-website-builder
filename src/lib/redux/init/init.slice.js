@@ -15,21 +15,21 @@ const initialState = {
       "#333333": "#333333",
       "#666666": "#666666",
     },
-    "sub_text": {
+    sub_text: {
       "#000000": "#000000",
       "#333333": "#333333",
       "#666666": "#666666",
     },
-    "button_color": {
+    button_color: {
       "#000000": "#000000",
       "#333333": "#333333",
       "#666666": "#666666",
     },
-    "background_color": {
+    background_color: {
       "#000000": "#000000",
       "#333333": "#333333",
       "#666666": "#666666",
-    }
+    },
   },
   pages: [
     {
@@ -42,14 +42,15 @@ const initialState = {
           folder: "header_navigation",
           templateId: "header_navigation_1",
           thumbnail: "/assets/svg/header_navigation.svg",
-          description: "A customizable header navigation bar with logo and links.",
+          description:
+            "A customizable header navigation bar with logo and links.",
           data: {
             logoUrl: "https://example.com/logo.png",
             links: [
-              { text: "Home", url: "/" },
-              { text: "About Us", url: "/about" },
-              { text: "Contact", url: "/contact" },
-              { text: "john", url: "/help" },
+              { text: "Home", url: "/home.html" },
+              { text: "About Us", url: "/about.html" },
+              { text: "Contact", url: "/contact.html" },
+              { text: "john", url: "/help.html" },
             ],
           },
         },
@@ -80,6 +81,24 @@ const initialState = {
       title: "About",
       widgets: [
         {
+          id: "header_navigation",
+          title: "Header Navigation",
+          folder: "header_navigation",
+          templateId: "header_navigation_1",
+          thumbnail: "/assets/svg/header_navigation.svg",
+          description:
+            "A customizable header navigation bar with logo and links.",
+          data: {
+            logoUrl: "https://example.com/logo.png",
+            links: [
+              { text: "Home", url: "/home.html" },
+              { text: "About Us", url: "/about.html" },
+              { text: "Contact", url: "/contact.html" },
+              { text: "john", url: "/help.html" },
+            ],
+          },
+        },
+        {
           id: "hero_banner",
           folder: "hero_banner",
           title: "Hero Banner",
@@ -95,6 +114,81 @@ const initialState = {
             buttonUrl: "/get-started",
             imageUrl: "/assets/svg/hero_image.svg",
             imageAlt: "Website Builder Platform",
+          },
+        },
+        {
+          id: "features",
+          folder: "features",
+          title: "Features",
+          templateId: "features_1",
+          thumbnail: "/assets/svg/features_1.svg",
+          description:
+            "A section to highlight key features of your product or service with icons and descriptions.",
+          data: {
+            title: "Our Key Features",
+            subtitle:
+              "Discover what makes our product stand out from the competition",
+            layout: "3",
+            features: [
+              {
+                title: "Easy to Use",
+                description:
+                  "Intuitive interface designed for users of all skill levels, no training required.",
+                iconName: "zap",
+                imageUrl: "",
+              },
+              {
+                title: "Secure & Reliable",
+                description:
+                  "Bank-level security with 99.9% uptime guarantee to keep your data safe and accessible.",
+                iconName: "shield",
+                imageUrl: "",
+              },
+              {
+                title: "24/7 Support",
+                description:
+                  "Our dedicated support team is available around the clock to assist you with any questions.",
+                iconName: "users",
+                imageUrl: "",
+              },
+              {
+                title: "Regular Updates",
+                description:
+                  "Continuous improvements and new features added regularly based on customer feedback.",
+                iconName: "refresh",
+                imageUrl: "",
+              },
+              {
+                title: "Integration Ready",
+                description:
+                  "Seamlessly connects with your existing tools and software ecosystem.",
+                iconName: "box",
+                imageUrl: "",
+              },
+              {
+                title: "Data Analytics",
+                description:
+                  "Powerful insights and reporting to help you make data-driven decisions.",
+                iconName: "bar-chart",
+                imageUrl: "",
+              },
+            ],
+            styles: {
+              backgroundColor: "#ffffff",
+              textColor: "#333333",
+              accentColor: "#0070f3",
+              iconColor: "#0070f3",
+              titleColor: "#111111",
+              cardBackgroundColor: "#f8f9fa",
+              cardBorderRadius: "8px",
+              cardPadding: "24px",
+              sectionPadding: "80px 20px",
+              titleFontSize: "36px",
+              subtitleFontSize: "18px",
+              featureTitleFontSize: "20px",
+              iconSize: "36px",
+              spacing: "24px",
+            },
           },
         },
       ],
@@ -191,7 +285,7 @@ const initSlice = createSlice({
       }
     },
   },
-  extraReducers: (builder) => { },
+  extraReducers: (builder) => {},
 });
 
 export const {

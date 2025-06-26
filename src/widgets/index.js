@@ -37,5 +37,5 @@ export const widgetsTemplates = {
   apply_offers,
   fare_summary,
   photo_gallery,
-  contact_us
+  contact_us,
 };

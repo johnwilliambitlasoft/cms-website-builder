@@ -9,12 +9,14 @@ Every widget in the system follows a consistent pattern to ensure modularity, re
 ### 1. One Schema, Multiple Templates
 
 Each widget folder contains:
+
 - One schema definition for all templates in that folder
 - One default data object for all templates in that folder
 - One metadata object for all templates in that folder
 - Multiple templates that share the schema and default data
 
 For example, a "header_navigation" widget might have:
+
 - header_navigation_schema
 - header_navigation_default_data
 - defaultMetadata (for all templates in that folder)
@@ -35,10 +37,10 @@ export const widget_name_schema = {
       required: true,
       maxLength: 100,
       // other validation rules
-    }
+    },
   },
   // Additional fields...
-}
+};
 ```
 
 ### 3. Default Data
@@ -54,8 +56,8 @@ export const widget_name_default_data = {
     backgroundColor: "#ffffff",
     textColor: "#333333",
     // etc.
-  }
-}
+  },
+};
 ```
 
 ### 4. Metadata
@@ -72,16 +74,16 @@ const defaultMetadata = {
     {
       id: "content",
       title: "Content",
-      fields: ["fieldName1", "fieldName2"]
+      fields: ["fieldName1", "fieldName2"],
     },
     {
       id: "appearance",
       title: "Appearance",
-      fields: ["styles.backgroundColor", "styles.textColor"]
-    }
+      fields: ["styles.backgroundColor", "styles.textColor"],
+    },
     // Additional sections...
-  ]
-}
+  ],
+};
 ```
 
 ### 5. Templates
@@ -108,8 +110,8 @@ export const widget_name_1 = {
     templateId: "widget_name_1",
     thumbnail: "/assets/svg/widget_thumbnail.svg",
     ...defaultMetadata, // Include the common metadata
-  }
-}
+  },
+};
 ```
 
 ## Adding New Widget Templates
@@ -124,6 +126,7 @@ To add a new template to an existing widget type:
 ## Example Widgets
 
 Examples of this pattern can be found in:
+
 - src/widgets/header_navigation/header_navigation.js
 - src/widgets/hero_banner/hero_banner.js
 - src/widgets/testimonials/testimonials.js

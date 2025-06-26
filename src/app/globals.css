@@ -87,7 +87,8 @@ body {
 }
 
 /* Disable zoom styles */
-html, body {
+html,
+body {
   touch-action: manipulation;
   -ms-touch-action: manipulation;
   -webkit-touch-action: manipulation;

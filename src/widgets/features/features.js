@@ -17,8 +17,8 @@ export const features_schema = {
     placeholder: "Our Features",
     validation: {
       required: true,
-      maxLength: 80
-    }
+      maxLength: 80,
+    },
   },
   subtitle: {
     type: "textarea",
@@ -26,8 +26,8 @@ export const features_schema = {
     description: "Secondary text below the main heading",
     placeholder: "Discover what makes our product great",
     validation: {
-      maxLength: 200
-    }
+      maxLength: 200,
+    },
   },
   features: {
     type: "array",
@@ -49,16 +49,16 @@ export const features_schema = {
         label: "Feature Title",
         validation: {
           required: true,
-          maxLength: 50
-        }
+          maxLength: 50,
+        },
       },
       description: {
         type: "textarea",
         label: "Feature Description",
         validation: {
           required: true,
-          maxLength: 200
-        }
+          maxLength: 200,
+        },
       },
       iconName: {
         type: "select",
@@ -77,15 +77,15 @@ export const features_schema = {
           { value: "users", label: "Users" },
           { value: "tool", label: "Tool" },
         ],
-        description: "Icon to display with this feature"
+        description: "Icon to display with this feature",
       },
       imageUrl: {
         type: "image",
         label: "Feature Image",
         description: "Optional image to display with this feature",
-        placeholder: "https://example.com/feature-image.jpg"
-      }
-    }
+        placeholder: "https://example.com/feature-image.jpg",
+      },
+    },
   },
   layout: {
     type: "select",
@@ -93,11 +93,11 @@ export const features_schema = {
     options: [
       { value: "2", label: "2 columns" },
       { value: "3", label: "3 columns" },
-      { value: "4", label: "4 columns" }
+      { value: "4", label: "4 columns" },
     ],
-    description: "Number of columns in the feature grid"
-  }
-}
+    description: "Number of columns in the feature grid",
+  },
+};
 
 // ==============================================
 // DEFAULT DATA - Common for all templates
@@ -110,40 +110,46 @@ export const features_default_data = {
   features: [
     {
       title: "Easy to Use",
-      description: "Intuitive interface designed for users of all skill levels, no training required.",
+      description:
+        "Intuitive interface designed for users of all skill levels, no training required.",
       iconName: "zap",
-      imageUrl: ""
+      imageUrl: "",
     },
     {
       title: "Secure & Reliable",
-      description: "Bank-level security with 99.9% uptime guarantee to keep your data safe and accessible.",
+      description:
+        "Bank-level security with 99.9% uptime guarantee to keep your data safe and accessible.",
       iconName: "shield",
-      imageUrl: ""
+      imageUrl: "",
     },
     {
       title: "24/7 Support",
-      description: "Our dedicated support team is available around the clock to assist you with any questions.",
+      description:
+        "Our dedicated support team is available around the clock to assist you with any questions.",
       iconName: "users",
-      imageUrl: ""
+      imageUrl: "",
     },
     {
       title: "Regular Updates",
-      description: "Continuous improvements and new features added regularly based on customer feedback.",
+      description:
+        "Continuous improvements and new features added regularly based on customer feedback.",
       iconName: "refresh",
-      imageUrl: ""
+      imageUrl: "",
     },
     {
       title: "Integration Ready",
-      description: "Seamlessly connects with your existing tools and software ecosystem.",
+      description:
+        "Seamlessly connects with your existing tools and software ecosystem.",
       iconName: "box",
-      imageUrl: ""
+      imageUrl: "",
     },
     {
       title: "Data Analytics",
-      description: "Powerful insights and reporting to help you make data-driven decisions.",
+      description:
+        "Powerful insights and reporting to help you make data-driven decisions.",
       iconName: "bar-chart",
-      imageUrl: ""
-    }
+      imageUrl: "",
+    },
   ],
   styles: {
     backgroundColor: "#ffffff",
@@ -159,9 +165,9 @@ export const features_default_data = {
     subtitleFontSize: "18px",
     featureTitleFontSize: "20px",
     iconSize: "36px",
-    spacing: "24px"
-  }
-}
+    spacing: "24px",
+  },
+};
 
 // ==============================================
 // METADATA - Common for all templates
@@ -176,36 +182,36 @@ const defaultMetadata = {
     {
       id: "content",
       title: "Content",
-      fields: ["title", "subtitle", "features", "layout"]
+      fields: ["title", "subtitle", "features", "layout"],
     },
     {
       id: "appearance",
       title: "Appearance",
       fields: [
-        "styles.backgroundColor", 
-        "styles.textColor", 
-        "styles.accentColor", 
-        "styles.iconColor", 
+        "styles.backgroundColor",
+        "styles.textColor",
+        "styles.accentColor",
+        "styles.iconColor",
         "styles.titleColor",
-        "styles.cardBackgroundColor"
-      ]
+        "styles.cardBackgroundColor",
+      ],
     },
     {
       id: "layout",
       title: "Layout",
       fields: [
-        "styles.cardBorderRadius", 
-        "styles.cardPadding", 
+        "styles.cardBorderRadius",
+        "styles.cardPadding",
         "styles.sectionPadding",
-        "styles.titleFontSize", 
+        "styles.titleFontSize",
         "styles.subtitleFontSize",
         "styles.featureTitleFontSize",
         "styles.iconSize",
-        "styles.spacing"
-      ]
-    }
-  ]
-}
+        "styles.spacing",
+      ],
+    },
+  ],
+};
 
 // ==============================================
 // TEMPLATE 1: FEATURES GRID
@@ -406,8 +412,8 @@ export const features_1 = {
     templateId: "features_1",
     thumbnail: "/assets/svg/features_grid.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};
 
 // ==============================================
 // TEMPLATE 2: FEATURES WITH ICONS ALTERNATING
@@ -633,5 +639,5 @@ export const features_2 = {
     templateId: "features_2",
     thumbnail: "/assets/svg/features_alternating.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};

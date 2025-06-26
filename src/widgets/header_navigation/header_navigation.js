@@ -11,49 +11,51 @@
 
 export const header_navigation_schema = {
   logoUrl: {
-    type: "image",       // Use image input type
+    type: "image", // Use image input type
     label: "Logo URL",
     description: "URL for the logo image",
     placeholder: "https://example.com/logo.png",
     validation: {
-      required: true
-    }
+      required: true,
+    },
   },
   links: {
-    type: "array",       // Array of items (repeatable)
+    type: "array", // Array of items (repeatable)
     label: "Navigation Links",
     description: "Add navigation menu links",
     itemLabel: "Menu Link", // Label for each item in the array
     addItemLabel: "Add Navigation Link", // Button text for adding new item
-    minItems: 1,         // Minimum required items
-    maxItems: 10,        // Maximum allowed items
-    defaultNewItem: {    // Default values for new items
+    minItems: 1, // Minimum required items
+    maxItems: 10, // Maximum allowed items
+    defaultNewItem: {
+      // Default values for new items
       text: "New Link",
       url: "#",
       hasDropdown: false,
-      dropdownItems: []
+      dropdownItems: [],
     },
-    item: {              // Schema for each item in the array
+    item: {
+      // Schema for each item in the array
       text: {
-        type: "text",    // Simple text input
+        type: "text", // Simple text input
         label: "Link Text",
         validation: {
           required: true,
-          maxLength: 30
-        }
+          maxLength: 30,
+        },
       },
       url: {
-        type: "url",     // URL input with validation
+        type: "url", // URL input with validation
         label: "Link URL",
         placeholder: "/page-url",
         validation: {
-          required: true
-        }
+          required: true,
+        },
       },
       hasDropdown: {
         type: "boolean",
         label: "Has Dropdown Menu",
-        description: "Whether this link has a dropdown submenu"
+        description: "Whether this link has a dropdown submenu",
       },
       dropdownItems: {
         type: "array",
@@ -63,7 +65,7 @@ export const header_navigation_schema = {
         addItemLabel: "Add Dropdown Item",
         conditional: {
           field: "hasDropdown",
-          value: true
+          value: true,
         },
         item: {
           text: {
@@ -71,27 +73,27 @@ export const header_navigation_schema = {
             label: "Link Text",
             validation: {
               required: true,
-              maxLength: 30
-            }
+              maxLength: 30,
+            },
           },
           url: {
             type: "url",
             label: "Link URL",
             placeholder: "/dropdown-page",
             validation: {
-              required: true
-            }
-          }
-        }
-      }
-    }
+              required: true,
+            },
+          },
+        },
+      },
+    },
   },
   showSearchBox: {
     type: "boolean",
     label: "Show Search Box",
-    description: "Display a search box in the navigation"
-  }
-}
+    description: "Display a search box in the navigation",
+  },
+};
 
 // ==============================================
 // DEFAULT DATA - Common for all templates
@@ -103,7 +105,7 @@ export const header_navigation_default_data = {
     {
       text: "Home",
       url: "/",
-      hasDropdown: false
+      hasDropdown: false,
     },
     {
       text: "Products",
@@ -112,28 +114,28 @@ export const header_navigation_default_data = {
       dropdownItems: [
         {
           text: "Product A",
-          url: "/products/a"
+          url: "/products/a",
         },
         {
           text: "Product B",
-          url: "/products/b"
+          url: "/products/b",
         },
         {
           text: "Product C",
-          url: "/products/c"
-        }
-      ]
+          url: "/products/c",
+        },
+      ],
     },
     {
       text: "About Us",
       url: "/about",
-      hasDropdown: false
+      hasDropdown: false,
     },
     {
       text: "Contact",
       url: "/contact",
-      hasDropdown: false
-    }
+      hasDropdown: false,
+    },
   ],
   showSearchBox: false,
   styles: {
@@ -146,9 +148,9 @@ export const header_navigation_default_data = {
     spacing: "20px",
     mobileBehavior: "stacked", // or "hamburger"
     borderRadius: "4px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)"
-  }
-}
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+};
 
 // ==============================================
 // METADATA - Common for all templates
@@ -163,28 +165,28 @@ const defaultMetadata = {
     {
       id: "content",
       title: "Content",
-      fields: ["logoUrl", "links", "showSearchBox"]
+      fields: ["logoUrl", "links", "showSearchBox"],
     },
     {
       id: "appearance",
       title: "Appearance",
       fields: [
-        "styles.backgroundColor", 
-        "styles.textColor", 
-        "styles.hoverColor", 
-        "styles.activeColor", 
+        "styles.backgroundColor",
+        "styles.textColor",
+        "styles.hoverColor",
+        "styles.activeColor",
         "styles.dropdownBackground",
         "styles.borderRadius",
-        "styles.boxShadow"
-      ]
+        "styles.boxShadow",
+      ],
     },
     {
       id: "layout",
       title: "Layout",
-      fields: ["styles.padding", "styles.spacing", "styles.mobileBehavior"]
-    }
-  ]
-}
+      fields: ["styles.padding", "styles.spacing", "styles.mobileBehavior"],
+    },
+  ],
+};
 
 // ==============================================
 // TEMPLATE 1: STANDARD HORIZONTAL NAVIGATION
@@ -260,8 +262,8 @@ export const header_navigation_1 = {
     templateId: "header_navigation_1",
     thumbnail: "/assets/svg/header_navigation.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};
 
 // ==============================================
 // TEMPLATE 2: CENTERED NAVIGATION WITH DROPDOWNS
@@ -543,5 +545,5 @@ export const header_navigation_2 = {
     templateId: "header_navigation_2",
     thumbnail: "/assets/svg/header_navigation_centered.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};

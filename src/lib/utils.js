@@ -3,7 +3,7 @@ import { widgetsTemplates } from "@/widgets/index.js";
 
 /**
  * Get widget templates from src/widgets directory
- * 
+ *
  * @returns {Object} Object containing all widget templates organized by widget type
  */
 export const getWidgetsTemplates = () => {
@@ -12,7 +12,7 @@ export const getWidgetsTemplates = () => {
 
 /**
  * Get a specific widget template from src/widgets by widget type and template ID
- * 
+ *
  * @param {string} widgetType - Widget type (folder name like 'header_navigation')
  * @param {string} templateId - Template identifier (optional, defaults to the widget type)
  * @returns {Object|null} Widget template data or null if not found
@@ -40,11 +40,14 @@ export const getWidgetTemplate = (widgetType, templateId = widgetType) => {
       }
 
       // Last resort: try to find any template in the module
-      const templateKeys = Object.keys(widgetModule).filter(key =>
-        key.includes(widgetType) && !key.includes('default_data_type'));
+      const templateKeys = Object.keys(widgetModule).filter(
+        (key) => key.includes(widgetType) && !key.includes("default_data_type"),
+      );
 
       if (templateKeys.length > 0) {
-        console.log(`Using fallback template ${templateKeys[0]} for ${widgetType}/${templateId}`);
+        console.log(
+          `Using fallback template ${templateKeys[0]} for ${widgetType}/${templateId}`,
+        );
         return widgetModule[templateKeys[0]];
       }
     }
@@ -52,7 +55,10 @@ export const getWidgetTemplate = (widgetType, templateId = widgetType) => {
     console.warn(`Widget template not found for ${widgetType}/${templateId}`);
     return null;
   } catch (error) {
-    console.error(`Error getting widget template for ${widgetType}/${templateId}:`, error);
+    console.error(
+      `Error getting widget template for ${widgetType}/${templateId}:`,
+      error,
+    );
     return null;
   }
 };
@@ -69,12 +75,16 @@ export const loadWidget = async (folder, templateId) => {
     // Get the widget from our imported templates
     const srcTemplate = getWidgetTemplate(folder, templateId);
     if (srcTemplate) {
-      console.log(`Loaded widget template from src/widgets: ${folder}/${templateId}`);
+      console.log(
+        `Loaded widget template from src/widgets: ${folder}/${templateId}`,
+      );
       return srcTemplate;
     }
 
     // If we couldn't find the template, throw an error
-    throw new Error(`Widget template ${folder}/${templateId} not found in src/widgets`);
+    throw new Error(
+      `Widget template ${folder}/${templateId} not found in src/widgets`,
+    );
   } catch (error) {
     console.error(`Failed to load widget (${folder}/${templateId}):`, error);
     throw error;
@@ -309,22 +319,24 @@ export const logAvailableWidgets = () => {
   console.log("Available Widget Templates:");
 
   try {
-    Object.keys(widgetsTemplates).forEach(widgetType => {
+    Object.keys(widgetsTemplates).forEach((widgetType) => {
       console.log(`Widget Type: ${widgetType}`);
       const widgetModule = widgetsTemplates[widgetType];
 
       // Log all exported keys from the widget module
       const exportedKeys = Object.keys(widgetModule);
-      console.log(`  Exported keys: ${exportedKeys.join(', ')}`);
+      console.log(`  Exported keys: ${exportedKeys.join(", ")}`);
 
       // Log available templates specifically
-      const templateKeys = exportedKeys.filter(key =>
-        !key.includes('default_data_type') && !key.includes('default_data'));
+      const templateKeys = exportedKeys.filter(
+        (key) =>
+          !key.includes("default_data_type") && !key.includes("default_data"),
+      );
 
       if (templateKeys.length > 0) {
-        console.log(`  Available templates: ${templateKeys.join(', ')}`);
+        console.log(`  Available templates: ${templateKeys.join(", ")}`);
       } else {
-        console.log('  No templates available');
+        console.log("  No templates available");
       }
     });
   } catch (error) {
@@ -334,7 +346,7 @@ export const logAvailableWidgets = () => {
 
 /**
  * Check if a widget module is properly defined
- * 
+ *
  * @param {string} widgetType - The widget type to check
  * @returns {boolean} True if the widget is properly defined, false otherwise
  */
@@ -352,15 +364,16 @@ export const isWidgetDefined = (widgetType) => {
   }
 
   // Check if it has at least one template
-  const hasTemplate = keys.some(key =>
-    !key.includes('default_data_type') && key.includes(widgetType));
+  const hasTemplate = keys.some(
+    (key) => !key.includes("default_data_type") && key.includes(widgetType),
+  );
 
   return hasTemplate;
 };
 
 /**
  * Generate a customization form for a widget based on its schema
- * 
+ *
  * @param {Object} widget - Widget definition with schema
  * @param {Object} currentData - Current widget data for default values
  * @returns {Object} Form configuration for the widget
@@ -372,32 +385,34 @@ export const generateWidgetForm = (widget, currentData = {}) => {
     : null;
 
   if (!schema) {
-    console.warn(`No schema found for widget ${widget.folder}/${widget.templateId}`);
+    console.warn(
+      `No schema found for widget ${widget.folder}/${widget.templateId}`,
+    );
     return { sections: [] };
   }
 
   // Get customization sections from metadata or create default
   const customizableSections = widget.metadata?.customizableSections || [
-    { id: 'content', title: 'Content', fields: Object.keys(schema) }
+    { id: "content", title: "Content", fields: Object.keys(schema) },
   ];
 
   // Build form sections
-  const formSections = customizableSections.map(section => {
+  const formSections = customizableSections.map((section) => {
     return {
       id: section.id,
       title: section.title,
-      fields: generateFieldsFromSchema(schema, section.fields, currentData)
+      fields: generateFieldsFromSchema(schema, section.fields, currentData),
     };
   });
 
   return {
-    sections: formSections
+    sections: formSections,
   };
 };
 
 /**
  * Generate form fields based on schema and current data
- * 
+ *
  * @param {Object} schema - The widget schema
  * @param {Array} fieldPaths - Field paths to include
  * @param {Object} currentData - Current widget data
@@ -406,9 +421,9 @@ export const generateWidgetForm = (widget, currentData = {}) => {
 export const generateFieldsFromSchema = (schema, fieldPaths, currentData) => {
   const fields = [];
 
-  fieldPaths.forEach(path => {
+  fieldPaths.forEach((path) => {
     // Handle nested paths (e.g., "styles.backgroundColor")
-    const pathParts = path.split('.');
+    const pathParts = path.split(".");
     const fieldName = pathParts[0];
 
     // Get field schema
@@ -426,29 +441,31 @@ export const generateFieldsFromSchema = (schema, fieldPaths, currentData) => {
     }
 
     // Generate field based on type
-    if (fieldSchema.type === 'array') {
+    if (fieldSchema.type === "array") {
       // Array fields (repeatable)
       fields.push({
         id: path,
-        type: 'array',
+        type: "array",
         label: fieldSchema.label || path,
         description: fieldSchema.description,
         minItems: fieldSchema.minItems || 0,
         maxItems: fieldSchema.maxItems,
         currentItems: Array.isArray(currentValue) ? currentValue : [],
-        addItemLabel: fieldSchema.addItemLabel || 'Add Item',
-        itemLabel: fieldSchema.itemLabel || 'Item',
-        itemFields: fieldSchema.item ? Object.keys(fieldSchema.item).map(itemField => {
-          const itemSchema = fieldSchema.item[itemField];
-          return {
-            id: itemField,
-            type: itemSchema.type || 'text',
-            label: itemSchema.label || itemField,
-            placeholder: itemSchema.placeholder || '',
-            required: itemSchema.validation?.required || false,
-            maxLength: itemSchema.validation?.maxLength,
-          };
-        }) : []
+        addItemLabel: fieldSchema.addItemLabel || "Add Item",
+        itemLabel: fieldSchema.itemLabel || "Item",
+        itemFields: fieldSchema.item
+          ? Object.keys(fieldSchema.item).map((itemField) => {
+              const itemSchema = fieldSchema.item[itemField];
+              return {
+                id: itemField,
+                type: itemSchema.type || "text",
+                label: itemSchema.label || itemField,
+                placeholder: itemSchema.placeholder || "",
+                required: itemSchema.validation?.required || false,
+                maxLength: itemSchema.validation?.maxLength,
+              };
+            })
+          : [],
       });
     } else if (pathParts.length > 1) {
       // Handle nested properties (usually style properties)
@@ -456,21 +473,21 @@ export const generateFieldsFromSchema = (schema, fieldPaths, currentData) => {
       fields.push({
         id: path,
         type: nestedType,
-        label: pathParts.slice(1).join(' '), // Convert camelCase to space-separated
+        label: pathParts.slice(1).join(" "), // Convert camelCase to space-separated
         value: currentValue,
-        placeholder: `Enter ${pathParts.slice(1).join(' ')}`,
+        placeholder: `Enter ${pathParts.slice(1).join(" ")}`,
       });
     } else {
       // Regular fields
       fields.push({
         id: path,
-        type: fieldSchema.type || 'text',
+        type: fieldSchema.type || "text",
         label: fieldSchema.label || path,
         description: fieldSchema.description,
-        placeholder: fieldSchema.placeholder || '',
+        placeholder: fieldSchema.placeholder || "",
         required: fieldSchema.validation?.required || false,
         maxLength: fieldSchema.validation?.maxLength,
-        value: currentValue
+        value: currentValue,
       });
     }
   });
@@ -480,44 +497,50 @@ export const generateFieldsFromSchema = (schema, fieldPaths, currentData) => {
 
 /**
  * Guess the field type based on its value
- * 
+ *
  * @param {any} value - The field value
  * @returns {string} Guessed field type
  */
 export const guessFieldTypeFromValue = (value) => {
   if (value === null || value === undefined) {
-    return 'text';
+    return "text";
   }
 
   // Check if it's a color
-  if (typeof value === 'string' && (
-    value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl')
-  )) {
-    return 'color';
+  if (
+    typeof value === "string" &&
+    (value.startsWith("#") ||
+      value.startsWith("rgb") ||
+      value.startsWith("hsl"))
+  ) {
+    return "color";
   }
 
   // Check if it's a URL
-  if (typeof value === 'string' && (
-    value.startsWith('http') || value.startsWith('/') || value.includes('.com')
-  )) {
-    return 'url';
+  if (
+    typeof value === "string" &&
+    (value.startsWith("http") ||
+      value.startsWith("/") ||
+      value.includes(".com"))
+  ) {
+    return "url";
   }
 
   // Check if it's a long text
-  if (typeof value === 'string' && value.length > 100) {
-    return 'textarea';
+  if (typeof value === "string" && value.length > 100) {
+    return "textarea";
   }
 
   // Boolean values
-  if (typeof value === 'boolean') {
-    return 'checkbox';
+  if (typeof value === "boolean") {
+    return "checkbox";
   }
 
   // Numbers
-  if (typeof value === 'number') {
-    return 'number';
+  if (typeof value === "number") {
+    return "number";
   }
 
   // Default to text
-  return 'text';
+  return "text";
 };

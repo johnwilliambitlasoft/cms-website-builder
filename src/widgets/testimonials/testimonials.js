@@ -17,8 +17,8 @@ export const testimonials_schema = {
     placeholder: "What Our Customers Say",
     validation: {
       required: true,
-      maxLength: 80
-    }
+      maxLength: 80,
+    },
   },
   subtitle: {
     type: "textarea",
@@ -26,8 +26,8 @@ export const testimonials_schema = {
     description: "Secondary text below the main heading",
     placeholder: "Read testimonials from our satisfied customers",
     validation: {
-      maxLength: 200
-    }
+      maxLength: 200,
+    },
   },
   testimonials: {
     type: "array",
@@ -40,7 +40,8 @@ export const testimonials_schema = {
     defaultNewItem: {
       name: "Customer Name",
       role: "Customer Role",
-      quote: "This is a fantastic product that has significantly improved my workflow.",
+      quote:
+        "This is a fantastic product that has significantly improved my workflow.",
       rating: 5,
       avatarUrl: "https://example.com/avatar.jpg",
     },
@@ -50,24 +51,24 @@ export const testimonials_schema = {
         label: "Customer Name",
         validation: {
           required: true,
-          maxLength: 50
-        }
+          maxLength: 50,
+        },
       },
       role: {
         type: "text",
         label: "Customer Role/Company",
         placeholder: "CEO at Company X",
         validation: {
-          maxLength: 50
-        }
+          maxLength: 50,
+        },
       },
       quote: {
         type: "textarea",
         label: "Testimonial Quote",
         validation: {
           required: true,
-          maxLength: 300
-        }
+          maxLength: 300,
+        },
       },
       rating: {
         type: "number",
@@ -76,23 +77,23 @@ export const testimonials_schema = {
         max: 5,
         step: 1,
         validation: {
-          required: true
-        }
+          required: true,
+        },
       },
       avatarUrl: {
         type: "image",
         label: "Customer Avatar",
         description: "Profile image of the customer",
-        placeholder: "https://example.com/avatar.jpg"
-      }
-    }
+        placeholder: "https://example.com/avatar.jpg",
+      },
+    },
   },
   showRatings: {
     type: "boolean",
     label: "Show Ratings",
-    description: "Display customer ratings as stars"
-  }
-}
+    description: "Display customer ratings as stars",
+  },
+};
 
 // ==============================================
 // DEFAULT DATA - Common for all templates
@@ -106,24 +107,27 @@ export const testimonials_default_data = {
     {
       name: "John Smith",
       role: "CEO at TechCorp",
-      quote: "This product has transformed how our company operates. The ease of use and powerful features make it a must-have for any business looking to grow.",
+      quote:
+        "This product has transformed how our company operates. The ease of use and powerful features make it a must-have for any business looking to grow.",
       rating: 5,
-      avatarUrl: "https://example.com/avatar1.jpg"
+      avatarUrl: "https://example.com/avatar1.jpg",
     },
     {
       name: "Sarah Johnson",
       role: "Marketing Director",
-      quote: "I've tried many similar solutions, but none compare to this. The customer support is exceptional, and the platform is intuitive yet powerful.",
+      quote:
+        "I've tried many similar solutions, but none compare to this. The customer support is exceptional, and the platform is intuitive yet powerful.",
       rating: 4,
-      avatarUrl: "https://example.com/avatar2.jpg"
+      avatarUrl: "https://example.com/avatar2.jpg",
     },
     {
       name: "Michael Wong",
       role: "Freelance Designer",
-      quote: "As a freelancer, I need tools that are reliable and efficient. This product has saved me countless hours and helped me deliver better results to my clients.",
+      quote:
+        "As a freelancer, I need tools that are reliable and efficient. This product has saved me countless hours and helped me deliver better results to my clients.",
       rating: 5,
-      avatarUrl: "https://example.com/avatar3.jpg"
-    }
+      avatarUrl: "https://example.com/avatar3.jpg",
+    },
   ],
   styles: {
     backgroundColor: "#f9f9f9",
@@ -136,9 +140,9 @@ export const testimonials_default_data = {
     subtitleFontSize: "18px",
     quoteColor: "#555555",
     starColor: "#FFD700",
-    spacing: "24px"
-  }
-}
+    spacing: "24px",
+  },
+};
 
 // ==============================================
 // METADATA - Common for all templates
@@ -153,33 +157,33 @@ const defaultMetadata = {
     {
       id: "content",
       title: "Content",
-      fields: ["title", "subtitle", "testimonials", "showRatings"]
+      fields: ["title", "subtitle", "testimonials", "showRatings"],
     },
     {
       id: "appearance",
       title: "Appearance",
       fields: [
-        "styles.backgroundColor", 
-        "styles.textColor", 
-        "styles.accentColor", 
-        "styles.cardBackgroundColor", 
+        "styles.backgroundColor",
+        "styles.textColor",
+        "styles.accentColor",
+        "styles.cardBackgroundColor",
         "styles.quoteColor",
-        "styles.starColor"
-      ]
+        "styles.starColor",
+      ],
     },
     {
       id: "layout",
       title: "Layout",
       fields: [
-        "styles.cardBorderRadius", 
-        "styles.cardPadding", 
-        "styles.titleFontSize", 
+        "styles.cardBorderRadius",
+        "styles.cardPadding",
+        "styles.titleFontSize",
         "styles.subtitleFontSize",
-        "styles.spacing"
-      ]
-    }
-  ]
-}
+        "styles.spacing",
+      ],
+    },
+  ],
+};
 
 // ==============================================
 // TEMPLATE 1: TESTIMONIALS GRID
@@ -369,8 +373,8 @@ export const testimonials_1 = {
     templateId: "testimonials_1",
     thumbnail: "/assets/svg/testimonials_grid.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};
 
 // ==============================================
 // TEMPLATE 2: TESTIMONIALS CAROUSEL
@@ -598,5 +602,5 @@ export const testimonials_2 = {
     templateId: "testimonials_2",
     thumbnail: "/assets/svg/testimonials_carousel.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};

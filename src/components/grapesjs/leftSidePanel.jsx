@@ -52,7 +52,7 @@ const LeftSidePanel = ({
                 expandedPages={expandedPages}
                 togglePageExpand={togglePageExpand}
                 updateWidgetOrder={updateWidgetOrder}
-                updatePageTitle ={updatePageTitle}
+                updatePageTitle={updatePageTitle}
               />
             ))}
         </div>

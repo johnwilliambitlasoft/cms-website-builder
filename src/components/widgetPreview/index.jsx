@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getWidgetTemplate } from '@/lib/utils';
-import { renderTemplate } from '@/lib/templateEngine';
-import { Loader } from '@/components';
-import styles from './WidgetPreview.module.css';
+import { useEffect, useState } from "react";
+import { getWidgetTemplate } from "@/lib/utils";
+import { renderTemplate } from "@/lib/templateEngine";
+import { Loader } from "@/components";
+import styles from "./WidgetPreview.module.css";
 
-const WidgetPreview = ({ folder='', templateId='' }) => {
+const WidgetPreview = ({ folder = "", templateId = "" }) => {
   const [widget, setWidget] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,18 +32,21 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
           // Try getting styles from the template itself
           if (widgetTemplate.styles) {
             defaultData.styles = widgetTemplate.styles;
-          } else if (typeof widgetTemplate === 'object') {
+          } else if (typeof widgetTemplate === "object") {
             // Look for styles in the template object
             defaultData.styles = defaultData.styles || {};
           }
         }
 
         // Get the HTML and CSS
-        const html = widgetTemplate.html || '';
-        const css = widgetTemplate.css || '';
+        const html = widgetTemplate.html || "";
+        const css = widgetTemplate.css || "";
 
         // Render the template with default data
-        console.log(`Rendering widget ${folder}/${templateId} with data:`, defaultData);
+        console.log(
+          `Rendering widget ${folder}/${templateId} with data:`,
+          defaultData,
+        );
         const renderedHtml = renderTemplate(html, defaultData);
         const renderedStyles = renderTemplate(css, defaultData);
 
@@ -59,8 +62,8 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
           schema: schema,
         });
       } catch (err) {
-        console.error('Error loading widget:', err);
-        setError(err.message || 'Failed to load widget');
+        console.error("Error loading widget:", err);
+        setError(err.message || "Failed to load widget");
       } finally {
         setLoading(false);
       }
@@ -71,7 +74,7 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
 
   // If loading, show minimal loading indicator
   if (loading) {
-    return <Loader />
+    return <Loader />;
   }
 
   // If error, show error message
@@ -89,25 +92,42 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
       {/* Info bar */}
       {showInfoBar && (
         <div className={styles.infoBar} id="infoBar">
-          <div>Widget: <strong>{folder}/{templateId}</strong></div>
+          <div>
+            Widget:{" "}
+            <strong>
+              {folder}/{templateId}
+            </strong>
+          </div>
           <div className={styles.infoButtons}>
-            <a href="#" className={styles.infoLink} onClick={(e) => {
-              e.preventDefault();
-              const dataPanel = document.getElementById('dataPanel');
-              if (dataPanel) {
-                dataPanel.classList.toggle(styles.dataPanelVisible);
-              }
-            }}>Show Data</a>
-            <a href="#" className={styles.infoLink} onClick={(e) => {
-              e.preventDefault();
-              setShowInfoBar(false);
-              setTimeout(() => {
-                const toggleBtn = document.getElementById('toggleBtn');
-                if (toggleBtn) {
-                  toggleBtn.classList.add(styles.infoToggleVisible);
+            <a
+              href="#"
+              className={styles.infoLink}
+              onClick={(e) => {
+                e.preventDefault();
+                const dataPanel = document.getElementById("dataPanel");
+                if (dataPanel) {
+                  dataPanel.classList.toggle(styles.dataPanelVisible);
                 }
-              }, 300);
-            }}>Hide Bar</a>
+              }}
+            >
+              Show Data
+            </a>
+            <a
+              href="#"
+              className={styles.infoLink}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowInfoBar(false);
+                setTimeout(() => {
+                  const toggleBtn = document.getElementById("toggleBtn");
+                  if (toggleBtn) {
+                    toggleBtn.classList.add(styles.infoToggleVisible);
+                  }
+                }, 300);
+              }}
+            >
+              Hide Bar
+            </a>
           </div>
         </div>
       )}
@@ -119,7 +139,7 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
           id="toggleBtn"
           onClick={() => {
             setShowInfoBar(true);
-            const toggleBtn = document.getElementById('toggleBtn');
+            const toggleBtn = document.getElementById("toggleBtn");
             if (toggleBtn) {
               toggleBtn.classList.remove(styles.infoToggleVisible);
             }
@@ -136,7 +156,7 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
           <button
             className={styles.closeButton}
             onClick={() => {
-              const dataPanel = document.getElementById('dataPanel');
+              const dataPanel = document.getElementById("dataPanel");
               if (dataPanel) {
                 dataPanel.classList.remove(styles.dataPanelVisible);
               }
@@ -146,11 +166,15 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
           </button>
         </div>
         <h3>Widget Data</h3>
-        <pre className={styles.dataPanelContent}>{JSON.stringify(widget.data, null, 2)}</pre>
+        <pre className={styles.dataPanelContent}>
+          {JSON.stringify(widget.data, null, 2)}
+        </pre>
         {widget.schema && (
           <>
             <h3>Widget Schema</h3>
-            <pre className={styles.dataPanelContent}>{JSON.stringify(widget.schema, null, 2)}</pre>
+            <pre className={styles.dataPanelContent}>
+              {JSON.stringify(widget.schema, null, 2)}
+            </pre>
           </>
         )}
       </div>
@@ -163,6 +187,6 @@ const WidgetPreview = ({ folder='', templateId='' }) => {
       </div>
     </div>
   );
-}
+};
 
 export default WidgetPreview;

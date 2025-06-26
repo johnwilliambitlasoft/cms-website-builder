@@ -38,6 +38,7 @@ const Grapesjs = () => {
   const pages = useSelector((state) => state.init.pages);
   const [loading, setLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(50);
+  const [previewActive, setPreviewActive] = useState(false);
 
   const changePage = async (pageId) => {
     if (editorRef.current) {
@@ -110,21 +111,185 @@ const Grapesjs = () => {
     setLoading(false);
   };
 
-  const updateCanvasZoom = (level) => {
+  const publishPage = () => {
     if (editorRef.current) {
-      const editor = editorRef.current;
-      const canvas = editor.Canvas;
-      const zoom = level
-      debugger
-      // set canvas.setCoords based on the zoom level and the parent container size
-      const containerWidth = containerRef.current.offsetWidth;
-      const containerHeight = containerRef.current.offsetHeight;
-      const zoomFactor = zoom / 100; // Convert percentage to factor
-      const newWidth = containerWidth * zoomFactor;
-      const newHeight = containerHeight * zoomFactor;
-      canvas.setZoom(level);
-      setZoomLevel(level);
+      try {
+        setLoading(true);
+        messageApi.info("Publishing pages...");
+
+        // Create the build directory structure
+        const createBuildDir = async () => {
+          try {
+            // Use fetch to call our API route that will create the build folders
+            // We explicitly set cleanFirst to true to remove any previous build
+            const response = await fetch("/api/publish/create-dirs", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                cleanFirst: true, // Always clean previous build
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to create build directories");
+            }
+
+            return await response.json();
+          } catch (error) {
+            console.error("Error creating build directories:", error);
+            throw error;
+          }
+        };
+
+        // Generate HTML and CSS files for all pages
+        const generateFiles = async () => {
+          await createBuildDir();
+
+          // Process each page
+          const publishedPages = [];
+
+          for (const page of pages) {
+            try {
+              // Get the page content
+              const pageContent = await constructPageContent(page.widgets);
+
+              // Create clean file name from page title or use page ID
+              const fileName = page.title
+                ? page.title
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/(^-|-$)/g, "")
+                : `page-${page.id}`;
+
+              // Build HTML with link to its CSS
+              const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${page.title || "Untitled Page"}</title>
+  <link rel="stylesheet" href="styles/${fileName}.css">
+</head>
+<body>
+  ${pageContent.component}
+</body>
+</html>`;
+
+              // Save HTML and CSS via API
+              const response = await fetch("/api/publish/save-files", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  fileName,
+                  html: htmlContent,
+                  css: pageContent.styles,
+                }),
+              });
+
+              if (!response.ok) {
+                throw new Error(
+                  `Failed to save files for page "${page.title}"`,
+                );
+              }
+
+              publishedPages.push(fileName);
+            } catch (error) {
+              console.error(`Error publishing page ${page.title}:`, error);
+              messageApi.error(
+                `Failed to publish page "${page.title}": ${error.message}`,
+              );
+            }
+          }
+
+          return publishedPages;
+        };
+
+        // Execute the publishing process
+        generateFiles()
+          .then(async (publishedPages) => {
+            messageApi.success(
+              `Successfully published ${publishedPages.length} pages to the build folder!`,
+            );
+
+            // Start the preview server and open the first published page
+            if (publishedPages.length > 0) {
+              try {
+                // Start the preview server via the API
+                const previewResponse = await fetch("/api/publish/preview", {
+                  method: "GET",
+                });
+
+                if (!previewResponse.ok) {
+                  throw new Error("Failed to start preview server");
+                }
+
+                const previewData = await previewResponse.json();
+
+                if (previewData.success && previewData.url) {
+                  // Open the preview URL in a new tab
+                  const previewUrl = `${previewData.url}/${publishedPages[0]}.html`;
+                  window.open(previewUrl, "_blank");
+                  messageApi.info(
+                    `Preview server running at: ${previewData.url}`,
+                  );
+                } else {
+                  // Fallback to direct file opening if preview server fails
+                  window.open(`/build/${publishedPages[0]}.html`, "_blank");
+                }
+              } catch (error) {
+                console.error("Preview server error:", error);
+                // Fallback to direct file opening
+                window.open(`/build/${publishedPages[0]}.html`, "_blank");
+                messageApi.warning(
+                  "Preview server could not start. Opening static file instead.",
+                );
+              }
+            }
+          })
+          .catch((error) => {
+            messageApi.error(`Publishing failed: ${error.message}`);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      } catch (error) {
+        console.error("Error in publish process:", error);
+        messageApi.error("Publishing failed");
+        setLoading(false);
+      }
     }
+  };
+
+  // Function to stop the preview server
+  const stopPreviewServer = async () => {
+    try {
+      const response = await fetch("/api/publish/preview", {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        messageApi.success("Preview server stopped");
+      } else {
+        messageApi.info(data.message);
+      }
+    } catch (error) {
+      console.error("Error stopping preview server:", error);
+      messageApi.error("Failed to stop preview server");
+    }
+  };
+
+  // Get the stored preview server URL
+  const getPreviewServerUrl = () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("previewServerUrl");
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -294,16 +459,18 @@ const Grapesjs = () => {
 
       // Add custom buttons to the component toolbar
       // Get the default component type
-      const defaultType = editor.DomComponents.getType('default');
+      const defaultType = editor.DomComponents.getType("default");
       // Get the existing toolbar configuration or initialize as an empty array
-      const existingToolbar = defaultType &&
-        defaultType.model &&
-        defaultType.model.prototype &&
-        defaultType.model.prototype.defaults &&
-        defaultType.model.prototype.defaults.toolbar || [];
+      const existingToolbar =
+        (defaultType &&
+          defaultType.model &&
+          defaultType.model.prototype &&
+          defaultType.model.prototype.defaults &&
+          defaultType.model.prototype.defaults.toolbar) ||
+        [];
 
       // Create a new default toolbar with our custom buttons added
-      editor.DomComponents.addType('default', {
+      editor.DomComponents.addType("default", {
         model: {
           defaults: {
             toolbar: [
@@ -311,20 +478,20 @@ const Grapesjs = () => {
               ...(Array.isArray(existingToolbar) ? existingToolbar : []),
               // Add our new buttons
               {
-                id: 'move-up',
-                command: 'component-move-up',
-                attributes: { title: 'Move Up' },
+                id: "move-up",
+                command: "component-move-up",
+                attributes: { title: "Move Up" },
                 label: `${MoveUp}`,
               },
               {
-                id: 'move-down',
-                command: 'component-move-down',
-                attributes: { title: 'Move Down' },
+                id: "move-down",
+                command: "component-move-down",
+                attributes: { title: "Move Down" },
                 label: `${MoveDown}`,
-              }
-            ]
-          }
-        }
+              },
+            ],
+          },
+        },
       });
 
       // Store editor instance in ref
@@ -397,14 +564,109 @@ const Grapesjs = () => {
           },
           {
             id: "fullscreen",
-            label: `<button class="fullscreen-button">Preview ${PlayIcon}</button>`,
+            label: `<button class="fullscreen-button">Editor Preview ${PlayIcon}</button>`,
             command: (editor) => editor.Commands.run("core:fullscreen"),
-            attributes: { title: "Fullscreen" },
+            attributes: { title: "Editor Fullscreen Preview" },
+          },
+          {
+            id: "live-preview",
+            label: `<button class="preview-button">Live Preview</button>`,
+            attributes: { title: "Preview in HTTP Server" },
+            command: async (editor) => {
+              try {
+                messageApi.info("Starting preview server...");
+
+                // Start the preview server via the API
+                const previewResponse = await fetch("/api/publish/preview", {
+                  method: "GET",
+                });
+
+                if (!previewResponse.ok) {
+                  throw new Error("Failed to start preview server");
+                }
+
+                const previewData = await previewResponse.json();
+
+                if (previewData.success && previewData.url) {
+                  // Open the preview URL in a new tab - default to home.html if available
+                  window.open(previewData.url, "_blank");
+                  messageApi.success(
+                    `Preview server running at: ${previewData.url}`,
+                  );
+
+                  // Set a state to indicate the preview is active
+                  setPreviewActive(true);
+                  // Store the preview URL in localStorage to make it available across page refreshes
+                  localStorage.setItem("previewServerUrl", previewData.url);
+                } else {
+                  throw new Error(
+                    previewData.message || "Preview server error",
+                  );
+                }
+              } catch (error) {
+                console.error("Preview server error:", error);
+                messageApi.error(`Preview failed: ${error.message}`);
+              }
+            },
+          },
+          {
+            id: "stop-preview",
+            label: `<button class="stop-preview-button">Stop Preview</button>`,
+            attributes: { title: "Stop HTTP Preview Server" },
+            command: async (editor) => {
+              try {
+                await stopPreviewServer();
+                setPreviewActive(false);
+                localStorage.removeItem("previewServerUrl");
+              } catch (error) {
+                console.error("Error stopping preview server:", error);
+              }
+            },
+            // Only show stop button if preview is active
+            visible: previewActive,
+          },
+          {
+            id: "view-published",
+            label: `<button class="view-published-button">View Published</button>`,
+            attributes: { title: "View Published Site" },
+            command: async (editor) => {
+              const previewUrl = getPreviewServerUrl();
+              if (previewUrl) {
+                window.open(previewUrl, "_blank");
+              } else if (previewActive) {
+                // If the preview is active but URL not stored, check status again
+                try {
+                  const response = await fetch("/api/publish/preview", {
+                    method: "GET",
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.url) {
+                      window.open(data.url, "_blank");
+                      localStorage.setItem("previewServerUrl", data.url);
+                    } else {
+                      messageApi.warning("Preview server URL not available");
+                    }
+                  }
+                } catch (error) {
+                  console.error("Error getting preview server URL:", error);
+                  messageApi.error("Failed to get preview server URL");
+                }
+              } else {
+                messageApi.info(
+                  "No published site available. Please publish first.",
+                );
+              }
+            },
+            // Only show view button if preview is active
+            visible: previewActive,
           },
           {
             id: "publish",
             label: `<button class="publish-button">Publish</button>`,
             attributes: { title: "Publish" },
+            command: publishPage,
           },
         ],
       });
@@ -436,7 +698,7 @@ const Grapesjs = () => {
             }
           }
           return false;
-        }
+        },
       });
 
       editor.Commands.add("component-move-down", {
@@ -456,7 +718,7 @@ const Grapesjs = () => {
             }
           }
           return false;
-        }
+        },
       });
 
       // Listen for device change events and update UI accordingly
@@ -474,6 +736,29 @@ const Grapesjs = () => {
       setLoading(false);
     }
   });
+
+  // Check if preview server is running on component mount
+  const checkPreviewServerStatus = async () => {
+    try {
+      const response = await fetch("/api/publish/preview", {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setPreviewActive(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking preview server status:", error);
+    }
+  };
+
+  // Call this in useEffect at component mount
+  useEffect(() => {
+    checkPreviewServerStatus();
+  }, []);
 
   return (
     <div className="grapesjs">
@@ -513,8 +798,7 @@ const Grapesjs = () => {
           ></div>
         </div>
       </div>
-      <RightSidePanel
-      />
+      <RightSidePanel />
     </div>
   );
 };

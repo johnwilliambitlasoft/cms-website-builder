@@ -13,18 +13,18 @@ const WidgetsList = ({ widgets, updateWidgetOrder }) => {
 
   return (
     <div className="page_child_item_list">
-        {widgetsList.map((widget, widgetIndex) => (
-          <div key={widget.id || widgetIndex} className="page_child_item">
-            <span className="page_child_item_title">
-              {widget.title || `Widget ${widgetIndex + 1}`}
-            </span>
-            <div
-              className="page_child_item_drag_icon"
-              dangerouslySetInnerHTML={{ __html: DragIcon }}
-            ></div>
-          </div>
-        ))}
-            {/* <ReactSortable
+      {widgetsList.map((widget, widgetIndex) => (
+        <div key={widget.id || widgetIndex} className="page_child_item">
+          <span className="page_child_item_title">
+            {widget.title || `Widget ${widgetIndex + 1}`}
+          </span>
+          <div
+            className="page_child_item_drag_icon"
+            dangerouslySetInnerHTML={{ __html: DragIcon }}
+          ></div>
+        </div>
+      ))}
+      {/* <ReactSortable
               list={widgetsList}
               // onEnd={(evt) => {
               //   const newIndex = evt.newIndex;

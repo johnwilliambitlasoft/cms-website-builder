@@ -16,8 +16,8 @@ export const hero_banner_schema = {
     placeholder: "Welcome to Our Website",
     validation: {
       required: true,
-      maxLength: 80
-    }
+      maxLength: 80,
+    },
   },
   subtitle: {
     type: "textarea",
@@ -25,8 +25,8 @@ export const hero_banner_schema = {
     description: "Secondary text below the main heading",
     placeholder: "Discover amazing content and features",
     validation: {
-      maxLength: 200
-    }
+      maxLength: 200,
+    },
   },
   buttonText: {
     type: "text",
@@ -41,8 +41,8 @@ export const hero_banner_schema = {
     placeholder: "/get-started",
     conditional: {
       field: "buttonText",
-      operator: "notEmpty"
-    }
+      operator: "notEmpty",
+    },
   },
   imageUrl: {
     type: "image",
@@ -50,16 +50,16 @@ export const hero_banner_schema = {
     description: "Banner background image URL",
     placeholder: "https://example.com/hero-image.jpg",
     validation: {
-      required: true
-    }
+      required: true,
+    },
   },
   imageAlt: {
     type: "text",
     label: "Image Alt Text",
     description: "Accessibility description for the image",
-    placeholder: "Hero Banner Image"
-  }
-}
+    placeholder: "Hero Banner Image",
+  },
+};
 
 // ==============================================
 // DEFAULT DATA - Common for all templates
@@ -82,9 +82,9 @@ export const hero_banner_default_data = {
     padding: "60px 20px",
     borderRadius: "8px",
     titleFontSize: "48px",
-    subtitleFontSize: "20px"
-  }
-}
+    subtitleFontSize: "20px",
+  },
+};
 
 // ==============================================
 // METADATA - Common for all templates
@@ -93,34 +93,46 @@ export const hero_banner_default_data = {
 const defaultMetadata = {
   folder: "hero_banner",
   title: "Hero Banner",
-  description: "A customizable hero banner with title, subtitle, and call-to-action button.",
+  description:
+    "A customizable hero banner with title, subtitle, and call-to-action button.",
   editorSchema: "hero_banner_schema", // Reference to the schema export name
   customizableSections: [
     {
       id: "content",
       title: "Content",
-      fields: ["title", "subtitle", "buttonText", "buttonUrl", "imageUrl", "imageAlt"]
+      fields: [
+        "title",
+        "subtitle",
+        "buttonText",
+        "buttonUrl",
+        "imageUrl",
+        "imageAlt",
+      ],
     },
     {
       id: "appearance",
       title: "Appearance",
       fields: [
-        "styles.backgroundColor", 
-        "styles.textColor", 
-        "styles.subtitleColor", 
-        "styles.buttonColor", 
-        "styles.buttonTextColor", 
+        "styles.backgroundColor",
+        "styles.textColor",
+        "styles.subtitleColor",
+        "styles.buttonColor",
+        "styles.buttonTextColor",
         "styles.buttonHoverColor",
-        "styles.borderRadius"
-      ]
+        "styles.borderRadius",
+      ],
     },
     {
       id: "layout",
       title: "Layout",
-      fields: ["styles.padding", "styles.titleFontSize", "styles.subtitleFontSize"]
-    }
-  ]
-}
+      fields: [
+        "styles.padding",
+        "styles.titleFontSize",
+        "styles.subtitleFontSize",
+      ],
+    },
+  ],
+};
 
 export const hero_banner_1 = {
   id: "hero_banner_1",
@@ -215,8 +227,8 @@ export const hero_banner_1 = {
     templateId: "hero_banner_1",
     thumbnail: "/assets/svg/hero_banner.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};
 
 // ==============================================
 // TEMPLATE 2: CENTERED HERO BANNER
@@ -328,5 +340,5 @@ export const hero_banner_2 = {
     templateId: "hero_banner_2",
     thumbnail: "/assets/svg/hero_banner_centered.svg",
     ...defaultMetadata,
-  }
-}
+  },
+};
