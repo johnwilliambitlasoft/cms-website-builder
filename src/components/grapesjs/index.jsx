@@ -1,104 +1,125 @@
 "use client";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useMessage } from "@/lib/provider/MessageProvider";
-import React, { useEffect, useRef, useState } from "react";
 import grapesjs from "grapesjs";
+
+// Styles
 import "grapesjs/dist/css/grapes.min.css";
 import "./grapesjs.css";
+
+// Components
 import RightSidePanel from "./rightSidePanel";
 import LeftSidePanel from "./leftSidePanel";
 import { Loader } from "@/components";
+
+// SVG Icons
 import {
-  DesktopIcon,
-  MobileIcon,
-  UndoIcon,
-  RedoIcon,
-  PlayIcon,
   MoveUp,
   MoveDown,
 } from "./EditorSvg";
+
+// Redux actions
 import {
   setCurrentPage,
-  setPageData,
   addPage,
   updateWidgetOrder,
   setCurrentWidget,
+  updatePageTitle,
 } from "@/lib/redux/init/init.slice";
-import { constructPageContent, extractWidgetsFromContent } from "@/lib/utils";
+
+// Utility functions
+import { constructPageContent } from "@/lib/utils";
+import { registerWidgetBlocks } from "@/lib/grapesJsWidgets";
+
+// Editor utilities
 import {
-  registerWidgetBlocks,
-  registerWidgetComponent,
-} from "@/lib/grapesJsWidgets";
+  addPanel,
+  getEditorConfig,
+  setupComponentSelection,
+  setupComponentToolbar,
+  setupDeviceCommands,
+  setupMoveCommands,
+  setDeviceActive
+} from "./utils/editorUtils";
+
+// Panel configurations
+import { getDevicesPanel, getHistoryPanel } from "./utils/panelConfigs";
+
+// Preview utilities
+import {
+  stopPreviewServer,
+  getPreviewServerUrl,
+  startPreviewServer,
+  checkPreviewServerStatus,
+  openPreviewInBrowser,
+  storePreviewUrl
+} from "./utils/previewUtils";
+
+// Publishing utilities
+import {
+  createBuildDirectories,
+  savePageFiles,
+  normalizeFileName, 
+  generateHtmlTemplate
+} from "./utils/publishUtils";
+
+/**
+ * GrapesJS Editor Component
+ * Main editor component for the CMS Website Builder
+ */
 const Grapesjs = () => {
+  // Hooks
   const dispatch = useDispatch();
   const messageApi = useMessage();
+  
+  // Refs
   const editorRef = useRef(null);
   const containerRef = useRef(null);
+  
+  // Redux state
   const currentPage = useSelector((state) => state.init.currentPage);
   const pages = useSelector((state) => state.init.pages);
+  
+  // Component state
   const [loading, setLoading] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(50);
   const [previewActive, setPreviewActive] = useState(false);
 
+  /**
+   * Changes the current active page
+   * @param {string} pageId - ID of the page to switch to
+   */
   const changePage = async (pageId) => {
-    if (editorRef.current) {
-      const editor = editorRef.current;
-      const page = pages.find((p) => p.id === pageId);
-      if (page) {
-        try {
-          const pageContent = await constructPageContent(page.widgets);
-
-          editor.setComponents(pageContent.component);
-          editor.setStyle(pageContent.styles);
-          dispatch(setCurrentPage(pageId));
-        } catch (error) {
-          console.error("Error loading page content from widgets:", error);
-          messageApi.error("Failed to load page content");
-        }
-      }
+    if (!editorRef.current) return;
+    
+    const editor = editorRef.current;
+    const page = pages.find((p) => p.id === pageId);
+    
+    if (!page) return;
+    
+    try {
+      setLoading(true);
+      const pageContent = await constructPageContent(page.widgets);
+      
+      editor.setComponents(pageContent.component);
+      editor.setStyle(pageContent.styles);
+      dispatch(setCurrentPage(pageId));
+    } catch (error) {
+      console.error("Error loading page content from widgets:", error);
+      messageApi.error("Failed to load page content");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const setDeviceActive = (deviceModel) => {
-    if (deviceModel) {
-      const deviceId = deviceModel ? deviceModel.get("id") : "desktop";
-      const deviceBtns = {
-        desktop: document.getElementById("device-desktop"),
-        mobile: document.getElementById("device-mobile"),
-      };
-      Object.keys(deviceBtns).forEach((key) => {
-        if (deviceBtns[key]) {
-          if (key === deviceId) {
-            deviceBtns[key].classList.add("gjs-pn-active");
-          } else {
-            deviceBtns[key].classList.remove("gjs-pn-active");
-          }
-        }
-      });
-    }
-  };
-
-  const addPanel = (editor, config) => {
-    if (editor.Panels.getPanel(config.id)) {
-      editor.Panels.removePanel(config.id);
-    }
-    // Add the panel with the provided configuration
-    if (!config.id) {
-      console.error("Panel configuration must include an id");
-      return;
-    }
-    if (!config.el) {
-      console.error(
-        "Panel configuration must include an element selector (el)",
-      );
-      return;
-    }
-    editor.Panels.addPanel(config);
-  };
-
+  /**
+   * Renders widget content in the editor
+   * @param {Array} widget - The widgets to render
+   */
   const contentRender = async (widget) => {
     try {
       const widgetContent = await constructPageContent(widget);
+      
       if (editorRef.current) {
         editorRef.current.setComponents(widgetContent.component);
         editorRef.current.setStyle(widgetContent.styles);
@@ -107,174 +128,145 @@ const Grapesjs = () => {
       }
     } catch (error) {
       console.error("Error rendering widget content:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const publishPage = () => {
-    if (editorRef.current) {
+  /**
+   * Publishes all pages to the build directory
+   */
+  const publishPage = async () => {
+    if (!editorRef.current) return;
+    
+    try {
+      setLoading(true);
+      messageApi.info("Publishing pages...");
+      
+      // Create build directories first
+      await createBuildDirectories();
+      
+      // Generate and save all page files
+      const publishedPages = await generateAllPages();
+      
+      messageApi.success(
+        `Successfully published ${publishedPages.length} pages to the build folder!`
+      );
+      
+      // Start preview server and open the first published page
+      if (publishedPages.length > 0) {
+        await startPreviewAndOpen(publishedPages[0]);
+      }
+    } catch (error) {
+      console.error("Error in publish process:", error);
+      messageApi.error(`Publishing failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  /**
+   * Generates HTML and CSS files for all pages
+   * @returns {Promise<Array>} Array of published page filenames
+   */
+  const generateAllPages = async () => {
+    const publishedPages = [];
+    
+    for (const page of pages) {
       try {
-        setLoading(true);
-        messageApi.info("Publishing pages...");
-
-        // Create the build directory structure
-        const createBuildDir = async () => {
-          try {
-            // Use fetch to call our API route that will create the build folders
-            // We explicitly set cleanFirst to true to remove any previous build
-            const response = await fetch("/api/publish/create-dirs", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                cleanFirst: true, // Always clean previous build
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Failed to create build directories");
-            }
-
-            return await response.json();
-          } catch (error) {
-            console.error("Error creating build directories:", error);
-            throw error;
-          }
-        };
-
-        // Generate HTML and CSS files for all pages
-        const generateFiles = async () => {
-          await createBuildDir();
-
-          // Process each page
-          const publishedPages = [];
-
-          for (const page of pages) {
-            try {
-              // Get the page content
-              const pageContent = await constructPageContent(page.widgets);
-
-              // Create clean file name from page title or use page ID
-              const fileName = page.title
-                ? page.title
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, "-")
-                  .replace(/(^-|-$)/g, "")
-                : `page-${page.id}`;
-
-              // Build HTML with link to its CSS
-              const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${page.title || "Untitled Page"}</title>
-  <link rel="stylesheet" href="styles/${fileName}.css">
-</head>
-<body>
-  ${pageContent.component}
-</body>
-</html>`;
-
-              // Save HTML and CSS via API
-              const response = await fetch("/api/publish/save-files", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  fileName,
-                  html: htmlContent,
-                  css: pageContent.styles,
-                }),
-              });
-
-              if (!response.ok) {
-                throw new Error(
-                  `Failed to save files for page "${page.title}"`,
-                );
-              }
-
-              publishedPages.push(fileName);
-            } catch (error) {
-              console.error(`Error publishing page ${page.title}:`, error);
-              messageApi.error(
-                `Failed to publish page "${page.title}": ${error.message}`,
-              );
-            }
-          }
-
-          return publishedPages;
-        };
-
-        // Execute the publishing process
-        generateFiles()
-          .then(async (publishedPages) => {
-            messageApi.success(
-              `Successfully published ${publishedPages.length} pages to the build folder!`,
-            );
-
-            // Start the preview server and open the first published page
-            if (publishedPages.length > 0) {
-              try {
-                // Start the preview server via the API
-                const previewResponse = await fetch("/api/publish/preview", {
-                  method: "GET",
-                });
-
-                if (!previewResponse.ok) {
-                  throw new Error("Failed to start preview server");
-                }
-
-                const previewData = await previewResponse.json();
-
-                if (previewData.success && previewData.url) {
-                  // Open the preview URL in a new tab
-                  const previewUrl = `${previewData.url}/${publishedPages[0]}.html`;
-                  window.open(previewUrl, "_blank");
-                  messageApi.info(
-                    `Preview server running at: ${previewData.url}`,
-                  );
-                } else {
-                  // Fallback to direct file opening if preview server fails
-                  window.open(`/build/${publishedPages[0]}.html`, "_blank");
-                }
-              } catch (error) {
-                console.error("Preview server error:", error);
-                // Fallback to direct file opening
-                window.open(`/build/${publishedPages[0]}.html`, "_blank");
-                messageApi.warning(
-                  "Preview server could not start. Opening static file instead.",
-                );
-              }
-            }
-          })
-          .catch((error) => {
-            messageApi.error(`Publishing failed: ${error.message}`);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+        // Get the page content
+        const pageContent = await constructPageContent(page.widgets);
+        
+        // Create clean filename
+        const fileName = normalizeFileName(page.title, page.id);
+        
+        // Generate HTML content
+        const htmlContent = generateHtmlTemplate(
+          page.title, 
+          pageContent.component, 
+          fileName
+        );
+        
+        // Save files
+        await savePageFiles(fileName, htmlContent, pageContent.styles);
+        
+        publishedPages.push(fileName);
       } catch (error) {
-        console.error("Error in publish process:", error);
-        messageApi.error("Publishing failed");
-        setLoading(false);
+        console.error(`Error publishing page ${page.title}:`, error);
+        messageApi.error(
+          `Failed to publish page "${page.title}": ${error.message}`
+        );
       }
     }
+    
+    return publishedPages;
+  };
+  
+  /**
+   * Starts the preview server and opens the specified page
+   * @param {string} pageFileName - The page filename to open
+   */
+  const startPreviewAndOpen = async (pageFileName) => {
+    try {
+      // Start the preview server
+      const previewData = await startPreviewServer();
+      
+      if (previewData.success && previewData.url) {
+        // Store the URL and update state
+        storePreviewUrl(previewData.url);
+        setPreviewActive(true);
+        
+        // Open in browser
+        openPreviewInBrowser(previewData.url, pageFileName);
+        messageApi.info(`Preview server running at: ${previewData.url}`);
+      } else {
+        // Fallback to direct file opening
+        window.open(`/build/${pageFileName}.html`, "_blank");
+      }
+    } catch (error) {
+      console.error("Preview server error:", error);
+      // Fallback to direct file opening
+      window.open(`/build/${pageFileName}.html`, "_blank");
+      messageApi.warning(
+        "Preview server could not start. Opening static file instead."
+      );
+    }
   };
 
-  // Function to stop the preview server
-  const stopPreviewServer = async () => {
+  /**
+   * Handles starting the live preview
+   */
+  const handleStartLivePreview = async () => {
     try {
-      const response = await fetch("/api/publish/preview", {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
+      messageApi.info("Starting preview server...");
+      
+      const previewData = await startPreviewServer();
+      
+      if (previewData.success && previewData.url) {
+        openPreviewInBrowser(previewData.url);
+        storePreviewUrl(previewData.url);
+        setPreviewActive(true);
+        messageApi.success(`Preview server running at: ${previewData.url}`);
+      } else {
+        throw new Error(previewData.message || "Preview server error");
+      }
+    } catch (error) {
+      console.error("Preview server error:", error);
+      messageApi.error(`Preview failed: ${error.message}`);
+    }
+  };
+  
+  /**
+   * Handles stopping the preview server
+   */
+  const handleStopPreview = async () => {
+    try {
+      const data = await stopPreviewServer();
+      
       if (data.success) {
         messageApi.success("Preview server stopped");
+        setPreviewActive(false);
+        localStorage.removeItem("previewServerUrl");
       } else {
         messageApi.info(data.message);
       }
@@ -283,513 +275,209 @@ const Grapesjs = () => {
       messageApi.error("Failed to stop preview server");
     }
   };
-
-  // Get the stored preview server URL
-  const getPreviewServerUrl = () => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("previewServerUrl");
+  
+  /**
+   * Handles viewing the published site
+   */
+  const handleViewPublished = async () => {
+    const previewUrl = getPreviewServerUrl();
+    
+    if (previewUrl) {
+      openPreviewInBrowser(previewUrl);
+    } else if (previewActive) {
+      // If the preview is active but URL not stored, check status again
+      try {
+        const data = await startPreviewServer();
+        
+        if (data.success && data.url) {
+          openPreviewInBrowser(data.url);
+          storePreviewUrl(data.url);
+        } else {
+          messageApi.warning("Preview server URL not available");
+        }
+      } catch (error) {
+        console.error("Error getting preview server URL:", error);
+        messageApi.error("Failed to get preview server URL");
+      }
+    } else {
+      messageApi.info("No published site available. Please publish first.");
     }
-    return null;
   };
 
-  useEffect(() => {
-    // Initialize editor with async setup
-    const initializeEditor = async () => {
-      setLoading(true);
-      const editorConfig = {
-        storageManager: {
-          type: "local",
-          autosave: true,
-          autoload: true,
-          stepsBeforeSave: 1,
-        },
-        deviceManager: {
-          devices: [
-            {
-              id: "desktop",
-              name: "Desktop",
-              width: "1200px", // Full width for desktop
-              widthMedia: "1200px",
-            },
-            {
-              id: "mobile",
-              name: "Mobile",
-              width: "320px",
-              widthMedia: "480px",
-            },
-          ],
-        },
-        layerManager: {
-          appendTo: `.layer-container`,
-          scrollLayers: true,
-          showWrapper: false, // Don't show the wrapper
-          // Custom layer view configuration
-          custom: true,
-          // Only show primary layers (direct children of the wrapper)
-          setupLayers: (layers, component) => {
-            const wrapper = component.getWrapper();
-            const children = wrapper.components();
-
-            // Only include direct children of the wrapper/body
-            if (component === wrapper) {
-              return children.models;
-            }
-
-            // Return empty array for non-primary layers to prevent them from showing children
-            return [];
-          },
-        },
-        height: "100vh",
-        width: "auto",
-        fromElement: false, // Set to false so we can load our custom content
-        storageManager: false,
-        panels: { defaults: [] },
-        // Configure selection behavior
-        selectorManager: {
-          componentFirst: true,
-        },
-      };
+  /**
+   * Initialize the GrapesJS editor
+   */
+  const initializeEditor = async () => {
+    setLoading(true);
+    
+    try {
+      // Initialize with config from utils
       const editor = grapesjs.init({
         container: containerRef.current,
-        ...editorConfig,
+        ...getEditorConfig(),
       });
-
-      // Configure selection constraints to only allow primary layer selection
-      editor.on("component:selected", (component) => {
-        // If the selected component is not a direct child of the body/wrapper,
-        // select its nearest parent that is a direct child of the body/wrapper
-        if (component) {
-          const parent = component.parent();
-          const wrapper = editor.getWrapper();
-
-          // If component is not a direct child of the wrapper/body
-          if (
-            parent &&
-            parent !== wrapper &&
-            wrapper.find("#" + parent.getId()).length > 0
-          ) {
-            // Find the top-level parent (direct child of wrapper)
-            let topLevelParent = component;
-            let currentParent = component;
-
-            while (
-              currentParent.parent() &&
-              currentParent.parent() !== wrapper
-            ) {
-              topLevelParent = currentParent.parent();
-              currentParent = currentParent.parent();
-            }
-
-            // Select the top-level parent instead
-            dispatch(
-              setCurrentWidget(
-                topLevelParent?.attributes?.attributes["data-widget-type"],
-              ),
-            );
-            editor.select(topLevelParent);
-            return;
-          }
-        }
-      });
-
-      // Disable selection of child elements in canvas
-      editor.on("component:mousedown", (component, event) => {
-        if (component && component.parent() !== editor.getWrapper()) {
-          // Find the top-level parent (direct child of wrapper)
-          let topLevelParent = component;
-          let currentParent = component;
-
-          while (
-            currentParent.parent() &&
-            currentParent.parent() !== editor.getWrapper()
-          ) {
-            topLevelParent = currentParent.parent();
-            currentParent = currentParent.parent();
-          }
-
-          // Prevent the default event handling
-          event.stopPropagation();
-
-          // Select the top-level parent instead
-          setTimeout(() => {
-            dispatch(
-              setCurrentWidget(
-                topLevelParent?.attributes?.attributes["data-widget-type"],
-              ),
-            );
-            editor.select(topLevelParent);
-          }, 0);
-        }
-      });
-
-      // Ensure layer manager selections follow the same rules
-      editor.on("layer:select", (component) => {
-        if (component) {
-          const wrapper = editor.getWrapper();
-
-          // If the component is not a direct child of the wrapper
-          if (component.parent() !== wrapper) {
-            // Find the top-level parent
-            let topLevelParent = component;
-            let currentParent = component;
-
-            while (
-              currentParent.parent() &&
-              currentParent.parent() !== wrapper
-            ) {
-              topLevelParent = currentParent.parent();
-              currentParent = currentParent.parent();
-            }
-
-            // Select the top-level parent instead
-            setTimeout(() => {
-              dispatch(
-                setCurrentWidget(
-                  topLevelParent?.attributes?.attributes["data-widget-type"],
-                ),
-              );
-              editor.select(topLevelParent);
-            }, 0);
-          }
-        }
-      });
-
-      // Register custom widget component
-      //registerWidgetComponent(editor);
-
-      // Add custom buttons to the component toolbar
-      // Get the default component type
-      const defaultType = editor.DomComponents.getType("default");
-      // Get the existing toolbar configuration or initialize as an empty array
-      const existingToolbar =
-        (defaultType &&
-          defaultType.model &&
-          defaultType.model.prototype &&
-          defaultType.model.prototype.defaults &&
-          defaultType.model.prototype.defaults.toolbar) ||
-        [];
-
-      // Create a new default toolbar with our custom buttons added
-      editor.DomComponents.addType("default", {
-        model: {
-          defaults: {
-            toolbar: [
-              // Add existing toolbar items if available
-              ...(Array.isArray(existingToolbar) ? existingToolbar : []),
-              // Add our new buttons
-              {
-                id: "move-up",
-                command: "component-move-up",
-                attributes: { title: "Move Up" },
-                label: `${MoveUp}`,
-              },
-              {
-                id: "move-down",
-                command: "component-move-down",
-                attributes: { title: "Move Down" },
-                label: `${MoveDown}`,
-              },
-            ],
-          },
-        },
-      });
-
-      // Store editor instance in ref
+      
+      // Set up component selection behavior
+      setupComponentSelection(editor, dispatch, setCurrentWidget);
+      
+      // Set up component toolbar with custom buttons
+      setupComponentToolbar(editor, MoveUp, MoveDown);
+      
+      // Set up device and move commands
+      setupDeviceCommands(editor);
+      setupMoveCommands(editor);
+      
+      // Store editor reference
       editorRef.current = editor;
-
-      //editor.editor.Canvas.setZoom(zoomLevel);
-
-      // Initialize with available widget blocks
+      
+      // Register widget blocks
       registerWidgetBlocks(editor);
-
-      // Load the initial page
-      const initialPage = pages.find((p) => p.id === currentPage);
-
-      if (initialPage?.widgets?.length > 0) {
-        // If the page has widget definitions, render them
-        try {
-          const pageContent = await constructPageContent(initialPage.widgets);
-
-          editor.setComponents(pageContent.component);
-          editor.setStyle(pageContent.styles);
-        } catch (error) {
-          console.error("Error loading page content from widgets:", error);
-          messageApi.error("Failed to load page content");
-        }
-      } else if (initialPage) {
-        // Otherwise load raw HTML/CSS
-        editor.setComponents(initialPage.component || "");
-        editor.setStyle(initialPage.styles || "");
-      }
-
-      addPanel(editor, {
-        id: "panel-devices",
-        el: ".panel__devices",
-        buttons: [
-          {
-            id: "device-desktop",
-            label: `${DesktopIcon} <span class="device-label">Desktop</span>`,
-            command: "set-device-desktop",
-            active: true,
-            togglable: false,
-          },
-          {
-            id: "device-mobile",
-            label: `${MobileIcon} <span class="device-label">Mobile</span>`,
-            command: "set-device-mobile",
-            togglable: false,
-          },
-        ],
-      });
-      // Add a panel for undo/redo buttons
-      addPanel(editor, {
-        id: "panel-history",
-        el: ".panel__history",
-        buttons: [
-          {
-            id: "undo",
-            label: `${UndoIcon}`,
-            command: (editor) => editor.Commands.run("core:undo"),
-            attributes: { title: "Undo" },
-          },
-          {
-            id: "redo",
-            label: `${RedoIcon}`,
-            command: (editor) => editor.Commands.run("core:redo"),
-            attributes: { title: "Redo" },
-          },
-          {
-            id: "separator",
-            className: "separator",
-          },
-          {
-            id: "fullscreen",
-            label: `<button class="fullscreen-button">Editor Preview ${PlayIcon}</button>`,
-            command: (editor) => editor.Commands.run("core:fullscreen"),
-            attributes: { title: "Editor Fullscreen Preview" },
-          },
-          {
-            id: "live-preview",
-            label: `<button class="preview-button">Live Preview</button>`,
-            attributes: { title: "Preview in HTTP Server" },
-            command: async (editor) => {
-              try {
-                messageApi.info("Starting preview server...");
-
-                // Start the preview server via the API
-                const previewResponse = await fetch("/api/publish/preview", {
-                  method: "GET",
-                });
-
-                if (!previewResponse.ok) {
-                  throw new Error("Failed to start preview server");
-                }
-
-                const previewData = await previewResponse.json();
-
-                if (previewData.success && previewData.url) {
-                  // Open the preview URL in a new tab - default to home.html if available
-                  window.open(previewData.url, "_blank");
-                  messageApi.success(
-                    `Preview server running at: ${previewData.url}`,
-                  );
-
-                  // Set a state to indicate the preview is active
-                  setPreviewActive(true);
-                  // Store the preview URL in localStorage to make it available across page refreshes
-                  localStorage.setItem("previewServerUrl", previewData.url);
-                } else {
-                  throw new Error(
-                    previewData.message || "Preview server error",
-                  );
-                }
-              } catch (error) {
-                console.error("Preview server error:", error);
-                messageApi.error(`Preview failed: ${error.message}`);
-              }
-            },
-          },
-          {
-            id: "stop-preview",
-            label: `<button class="stop-preview-button">Stop Preview</button>`,
-            attributes: { title: "Stop HTTP Preview Server" },
-            command: async (editor) => {
-              try {
-                await stopPreviewServer();
-                setPreviewActive(false);
-                localStorage.removeItem("previewServerUrl");
-              } catch (error) {
-                console.error("Error stopping preview server:", error);
-              }
-            },
-            // Only show stop button if preview is active
-            visible: previewActive,
-          },
-          {
-            id: "view-published",
-            label: `<button class="view-published-button">View Published</button>`,
-            attributes: { title: "View Published Site" },
-            command: async (editor) => {
-              const previewUrl = getPreviewServerUrl();
-              if (previewUrl) {
-                window.open(previewUrl, "_blank");
-              } else if (previewActive) {
-                // If the preview is active but URL not stored, check status again
-                try {
-                  const response = await fetch("/api/publish/preview", {
-                    method: "GET",
-                  });
-
-                  if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.url) {
-                      window.open(data.url, "_blank");
-                      localStorage.setItem("previewServerUrl", data.url);
-                    } else {
-                      messageApi.warning("Preview server URL not available");
-                    }
-                  }
-                } catch (error) {
-                  console.error("Error getting preview server URL:", error);
-                  messageApi.error("Failed to get preview server URL");
-                }
-              } else {
-                messageApi.info(
-                  "No published site available. Please publish first.",
-                );
-              }
-            },
-            // Only show view button if preview is active
-            visible: previewActive,
-          },
-          {
-            id: "publish",
-            label: `<button class="publish-button">Publish</button>`,
-            attributes: { title: "Publish" },
-            command: publishPage,
-          },
-        ],
-      });
-
-      // Define commands for device switching
-      editor.Commands.add("set-device-desktop", {
-        run: (editor) => editor.setDevice("desktop"),
-      });
-
-      editor.Commands.add("set-device-mobile", {
-        run: (editor) => editor.setDevice("mobile"),
-      });
-
-      // Add custom commands for moving components up and down
-      editor.Commands.add("component-move-up", {
-        run: (editor) => {
-          const selectedComponent = editor.getSelected();
-          if (selectedComponent) {
-            const parent = selectedComponent.parent();
-            const collection = parent.components();
-            const index = collection.indexOf(selectedComponent);
-
-            // Only move if it's not already at the top
-            if (index > 0) {
-              collection.remove(selectedComponent);
-              collection.add(selectedComponent, { at: index - 1 });
-              editor.select(selectedComponent);
-              return true;
-            }
-          }
-          return false;
-        },
-      });
-
-      editor.Commands.add("component-move-down", {
-        run: (editor) => {
-          const selectedComponent = editor.getSelected();
-          if (selectedComponent) {
-            const parent = selectedComponent.parent();
-            const collection = parent.components();
-            const index = collection.indexOf(selectedComponent);
-
-            // Only move if it's not already at the bottom
-            if (index < collection.length - 1) {
-              collection.remove(selectedComponent);
-              collection.add(selectedComponent, { at: index + 1 });
-              editor.select(selectedComponent);
-              return true;
-            }
-          }
-          return false;
-        },
-      });
-
-      // Listen for device change events and update UI accordingly
+      
+      // Load initial page content
+      await loadInitialPage(editor);
+      
+      // Set up editor panels
+      setupEditorPanels(editor);
+      
+      // Set up device change listener
       editor.on("change:device", () => {
         const deviceModel = editor.getDevice();
         setDeviceActive(deviceModel);
       });
-
+    } catch (error) {
+      console.error("Error initializing editor:", error);
+      messageApi.error("Failed to initialize editor");
+    } finally {
       setLoading(false);
+    }
+  };
+  
+  /**
+   * Load the initial page content
+   * @param {Object} editor - GrapesJS editor instance
+   */
+  const loadInitialPage = async (editor) => {
+    const initialPage = pages.find((p) => p.id === currentPage);
+    
+    if (!initialPage) return;
+    
+    if (initialPage?.widgets?.length > 0) {
+      // If the page has widget definitions, render them
+      try {
+        const pageContent = await constructPageContent(initialPage.widgets);
+        editor.setComponents(pageContent.component);
+        editor.setStyle(pageContent.styles);
+      } catch (error) {
+        console.error("Error loading page content from widgets:", error);
+        messageApi.error("Failed to load page content");
+      }
+    } else {
+      // Otherwise load raw HTML/CSS
+      editor.setComponents(initialPage.component || "");
+      editor.setStyle(initialPage.styles || "");
+    }
+  };
+  
+  /**
+   * Set up editor panels (devices, history, etc.)
+   * @param {Object} editor - GrapesJS editor instance
+   */
+  const setupEditorPanels = (editor) => {
+    // Add devices panel
+    addPanel(editor, getDevicesPanel());
+    
+    // Add history panel with preview/publish controls
+    const previewHandlers = {
+      startLivePreview: () => handleStartLivePreview(editor),
+      stopPreview: () => handleStopPreview(editor),
+      viewPublished: () => handleViewPublished(editor)
     };
-    // Execute the async initialization
+    
+    addPanel(editor, getHistoryPanel(
+      () => publishPage(editor),
+      previewActive,
+      previewHandlers
+    ));
+  };
+  
+  // Initialize editor on component mount
+  useEffect(() => {
     if (editorRef.current == null) {
-      initializeEditor();
+      // Using .then() since we can't use await directly in useEffect
+      initializeEditor().catch(error => {
+        console.error("Error during editor initialization:", error);
+        messageApi.error("Failed to initialize editor");
+        setLoading(false);
+      });
     } else {
       setLoading(false);
     }
-  });
-
-  // Check if preview server is running on component mount
-  const checkPreviewServerStatus = async () => {
-    try {
-      const response = await fetch("/api/publish/preview", {
-        method: "GET",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setPreviewActive(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error checking preview server status:", error);
-    }
-  };
-
-  // Call this in useEffect at component mount
-  useEffect(() => {
-    checkPreviewServerStatus();
   }, []);
 
+  // Check preview server status on component mount
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const isActive = await checkPreviewServerStatus();
+        setPreviewActive(isActive);
+      } catch (error) {
+        console.error("Error checking preview server status:", error);
+      }
+    };
+    
+    checkStatus();
+  }, []);
+
+  /**
+   * Handle updating widget order
+   * @param {Array} newOrder - New widget order
+   */
+  const handleUpdateWidgetOrder = (newOrder) => {
+    setLoading(true);
+    dispatch(
+      updateWidgetOrder({
+        pageId: currentPage,
+        newOrder: newOrder,
+      })
+    );
+    contentRender(newOrder);
+  };
+  
+  /**
+   * Handle creating a new page
+   */
+  const handleAddPage = () => {
+    dispatch(addPage());
+  };
+  
+  /**
+   * Handle updating page title
+   * @param {string} newTitle - New page title
+   */
+  const handleUpdatePageTitle = (newTitle) => {
+    setLoading(true);
+    dispatch(
+      updatePageTitle({
+        pageId: currentPage,
+        newTitle: newTitle,
+      })
+    );
+  };
+  
   return (
     <div className="grapesjs">
+      {/* Left panel with pages and widgets */}
       <LeftSidePanel
         onPageChange={changePage}
         currentPage={currentPage}
         pages={pages}
-        addPage={() => {
-          dispatch(addPage());
-        }}
-        updateWidgetOrder={(newOrder) => {
-          setLoading(true);
-          dispatch(
-            updateWidgetOrder({
-              pageId: currentPage,
-              newOrder: newOrder,
-            }),
-          );
-          contentRender(newOrder);
-        }}
-        updatePageTitle={(newTitle) => {
-          setLoading(true);
-          dispatch(
-            updatePageTitle({
-              pageId: currentPage,
-              newTitle: newTitle,
-            }),
-          );
-        }}
+        addPage={handleAddPage}
+        updateWidgetOrder={handleUpdateWidgetOrder}
+        updatePageTitle={handleUpdatePageTitle}
       />
-      <div className={`editorPanel`}>
+      
+      {/* Main editor panel */}
+      <div className="editorPanel">
         <div className={`editor-container ${loading ? "loading" : ""}`}>
           {loading && <Loader />}
           <div
@@ -798,6 +486,8 @@ const Grapesjs = () => {
           ></div>
         </div>
       </div>
+      
+      {/* Right panel with properties */}
       <RightSidePanel />
     </div>
   );

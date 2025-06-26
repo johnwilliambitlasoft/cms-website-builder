@@ -67,6 +67,9 @@
   --greyLight1: #f3f5f8;
   --greyLight2: #787e88;
   --greyDark: #323841;
+  --blue: #0070f3;
+  --blueLight: #e6f0ff;
+  --blueDark: #005bb5;
 
   /* Font families */
   --font-genos: "Genos", sans-serif;

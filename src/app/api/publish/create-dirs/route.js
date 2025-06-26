@@ -8,12 +8,13 @@ import { prepareBuildDirectory } from "@/lib/publish-utils";
 export async function POST() {
   try {
     // Prepare build directories (clean and recreate)
-    const { buildDir, stylesDir } = prepareBuildDirectory();
+    const { buildDir, stylesDir, scriptsDir } = prepareBuildDirectory();
 
     return NextResponse.json({
       success: true,
       buildDir: "/public/build",
       stylesDir: "/public/build/styles",
+      scriptDir: "/public/build/scripts",
       cleaned: true,
       message:
         "Previous build removed and new build directories created successfully",

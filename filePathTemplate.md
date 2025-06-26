@@ -128,3 +128,17 @@ apply_offers
 fare_summary
 photo_gallery
 contact_us
+
+
+touch src/javascript/mainApplication.js
+touch src/javascript/reducer.js
+touch src/javascript/bookingCalculation.js
+touch src/javascript/gtmAction.js
+touch src/javascript/localStorage.js
+touch src/javascript/serviceDetails.js
+touch src/javascript/config.js
+touch src/javascript/init.js
+touch src/javascript/searchResult.js
+touch src/javascript/user.js
+touch src/javascript/utils.js
+touch src/javascript/api.js
