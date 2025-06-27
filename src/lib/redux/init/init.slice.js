@@ -304,7 +304,7 @@ const initialState = {
       styles: "",
     },
   ],
-  currentPage: "page1",
+  currentPage: "home",
   currentWidget: "header_navigation",
 };
 

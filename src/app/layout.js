@@ -20,12 +20,12 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <DisableZoomWrapper>
         <Header />
         <ReduxProvider>
           <MessageProvider>{children}</MessageProvider>
         </ReduxProvider>
-        {/* <DisableZoomWrapper>
-        </DisableZoomWrapper> */}
+        </DisableZoomWrapper>
       </body>
     </html>
   );
