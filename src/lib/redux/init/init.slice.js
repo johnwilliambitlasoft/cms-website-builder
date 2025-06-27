@@ -47,11 +47,54 @@ const initialState = {
           data: {
             logoUrl: "https://example.com/logo.png",
             links: [
-              { text: "Home", url: "/home.html" },
-              { text: "About Us", url: "/about.html" },
-              { text: "Contact", url: "/contact.html" },
-              { text: "john", url: "/help.html" },
+              {
+                text: "Home",
+                url: "/",
+                hasDropdown: false,
+              },
+              {
+                text: "Products",
+                url: "/products",
+                hasDropdown: true,
+                dropdownItems: [
+                  {
+                    text: "Product A",
+                    url: "/products/a",
+                  },
+                  {
+                    text: "Product B",
+                    url: "/products/b",
+                  },
+                  {
+                    text: "Product C",
+                    url: "/products/c",
+                  },
+                ],
+              },
+              {
+                text: "About Us",
+                url: "/about",
+                hasDropdown: false,
+              },
+              {
+                text: "Contact",
+                url: "/contact",
+                hasDropdown: false,
+              },
             ],
+            showSearchBox: false,
+            styles: {
+              backgroundColor: "#ffffff",
+              textColor: "#333333",
+              hoverColor: "#0070f3",
+              activeColor: "#0051cc",
+              dropdownBackground: "#ffffff",
+              padding: "20px 40px",
+              spacing: "20px",
+              mobileBehavior: "stacked", // or "hamburger"
+              borderRadius: "4px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            },
           },
         },
         {
@@ -63,13 +106,24 @@ const initialState = {
           description:
             "A hero banner with a title, subtitle, button, and image. Perfect for showcasing your main message.",
           data: {
-            title: "Build Beautiful Websites",
-            subtitle:
-              "Our CMS Website Builder makes it easy to create stunning, responsive websites without writing code.",
+            title: "Welcome to Our Website",
+            subtitle: "Discover amazing content and features",
             buttonText: "Get Started",
             buttonUrl: "/get-started",
-            imageUrl: "/assets/svg/hero_image.svg",
-            imageAlt: "Website Builder Platform",
+            imageUrl: "https://example.com/hero-image.jpg",
+            imageAlt: "Hero Image",
+            styles: {
+              backgroundColor: "#ffffff",
+              textColor: "#222222",
+              subtitleColor: "#666666",
+              buttonColor: "#0070f3",
+              buttonTextColor: "#ffffff",
+              buttonHoverColor: "#0051cc",
+              padding: "60px 20px",
+              borderRadius: "8px",
+              titleFontSize: "48px",
+              subtitleFontSize: "20px",
+            },
           },
         },
       ],
@@ -91,11 +145,54 @@ const initialState = {
           data: {
             logoUrl: "https://example.com/logo.png",
             links: [
-              { text: "Home", url: "/home.html" },
-              { text: "About Us", url: "/about.html" },
-              { text: "Contact", url: "/contact.html" },
-              { text: "john", url: "/help.html" },
+              {
+                text: "Home",
+                url: "/",
+                hasDropdown: false,
+              },
+              {
+                text: "Products",
+                url: "/products",
+                hasDropdown: true,
+                dropdownItems: [
+                  {
+                    text: "Product A",
+                    url: "/products/a",
+                  },
+                  {
+                    text: "Product B",
+                    url: "/products/b",
+                  },
+                  {
+                    text: "Product C",
+                    url: "/products/c",
+                  },
+                ],
+              },
+              {
+                text: "About Us",
+                url: "/about",
+                hasDropdown: false,
+              },
+              {
+                text: "Contact",
+                url: "/contact",
+                hasDropdown: false,
+              },
             ],
+            showSearchBox: false,
+            styles: {
+              backgroundColor: "#ffffff",
+              textColor: "#333333",
+              hoverColor: "#0070f3",
+              activeColor: "#0051cc",
+              dropdownBackground: "#ffffff",
+              padding: "20px 40px",
+              spacing: "20px",
+              mobileBehavior: "stacked", // or "hamburger"
+              borderRadius: "4px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            },
           },
         },
         {
@@ -107,13 +204,24 @@ const initialState = {
           description:
             "A hero banner with a title, subtitle, button, and image. Perfect for showcasing your main message.",
           data: {
-            title: "Build Beautiful Websites",
-            subtitle:
-              "Our CMS Website Builder makes it easy to create stunning, responsive websites without writing code.",
+            title: "Welcome to Our Website",
+            subtitle: "Discover amazing content and features",
             buttonText: "Get Started",
             buttonUrl: "/get-started",
-            imageUrl: "/assets/svg/hero_image.svg",
-            imageAlt: "Website Builder Platform",
+            imageUrl: "https://example.com/hero-image.jpg",
+            imageAlt: "Hero Image",
+            styles: {
+              backgroundColor: "#ffffff",
+              textColor: "#222222",
+              subtitleColor: "#666666",
+              buttonColor: "#0070f3",
+              buttonTextColor: "#ffffff",
+              buttonHoverColor: "#0051cc",
+              padding: "60px 20px",
+              borderRadius: "8px",
+              titleFontSize: "48px",
+              subtitleFontSize: "20px",
+            },
           },
         },
         {
@@ -285,7 +393,7 @@ const initSlice = createSlice({
       }
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => { },
 });
 
 export const {

@@ -64,6 +64,12 @@ import {
   generateHtmlTemplate
 } from "./utils/publishUtils";
 
+// Canvas utilities
+import {
+  updateCanvasTransform,
+  setupCanvasResizeObserver
+} from "./utils/canvasUtils";
+
 /**
  * GrapesJS Editor Component
  * Main editor component for the CMS Website Builder
@@ -305,6 +311,18 @@ const Grapesjs = () => {
   };
 
   /**
+   * Apply canvas transformation to fit within the container
+   */
+  const applyCanvasTransform = () => {
+    if (editorRef.current && containerRef.current) {
+      const transform = updateCanvasTransform(editorRef.current, containerRef.current);
+      if (transform) {
+        console.log(`Applied canvas transform: ${transform.transform}`);
+      }
+    }
+  };
+
+  /**
    * Initialize the GrapesJS editor
    */
   const initializeEditor = async () => {
@@ -339,11 +357,29 @@ const Grapesjs = () => {
       // Set up editor panels
       setupEditorPanels(editor);
       
-      // Set up device change listener
+      // Set up device change listener with canvas transformation
       editor.on("change:device", () => {
         const deviceModel = editor.getDevice();
+        // Apply canvas transform when device changes
+        applyCanvasTransform();
         setDeviceActive(deviceModel);
       });
+      
+      // Set up canvas resize observer
+      setupCanvasResizeObserver(editor, containerRef.current);
+      
+      // Add keyboard shortcut for canvas transformation (Ctrl + equals)
+      editor.Commands.add('canvas-transform-fit', {
+        run: () => {
+          applyCanvasTransform();
+          return true;
+        }
+      });
+      
+      editor.Keymaps.add('canvas-transform-fit', 'ctrl+=', 'canvas-transform-fit');
+      
+      // Initial transform application
+      applyCanvasTransform();
     } catch (error) {
       console.error("Error initializing editor:", error);
       messageApi.error("Failed to initialize editor");
@@ -412,6 +448,42 @@ const Grapesjs = () => {
     } else {
       setLoading(false);
     }
+  }, []);
+
+  // Add keyboard shortcuts effect
+  useEffect(() => {
+    if (!editorRef.current) return;
+    
+    const handleKeyDown = (event) => {
+      // Check for Ctrl + = key combination
+      if ((event.ctrlKey || event.metaKey) && event.key === '=') {
+        event.preventDefault();
+        applyCanvasTransform();
+        messageApi.info('Canvas fitted to container');
+      }
+    };
+    
+    // Add event listener for keyboard shortcuts
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (editorRef.current && containerRef.current) {
+        applyCanvasTransform();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Check preview server status on component mount

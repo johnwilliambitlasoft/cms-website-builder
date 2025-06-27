@@ -66,28 +66,28 @@ export const getHistoryPanel = (publishPage, previewActive, previewHandlers) => 
         command: (editor) => editor.Commands.run("core:fullscreen"),
         attributes: { title: "Editor Fullscreen Preview" },
       },
-      {
-        id: "live-preview",
-        label: `<button class="preview-button">Live Preview</button>`,
-        attributes: { title: "Preview in HTTP Server" },
-        command: startLivePreview,
-      },
-      {
-        id: "stop-preview",
-        label: `<button class="stop-preview-button">Stop Preview</button>`,
-        attributes: { title: "Stop HTTP Preview Server" },
-        command: stopPreview,
-        // Only show stop button if preview is active
-        visible: previewActive,
-      },
-      {
-        id: "view-published",
-        label: `<button class="view-published-button">View Published</button>`,
-        attributes: { title: "View Published Site" },
-        command: viewPublished,
-        // Only show view button if preview is active
-        visible: previewActive,
-      },
+      // {
+      //   id: "live-preview",
+      //   label: `<button class="preview-button">Live Preview</button>`,
+      //   attributes: { title: "Preview in HTTP Server" },
+      //   command: startLivePreview,
+      // },
+      // {
+      //   id: "stop-preview",
+      //   label: `<button class="stop-preview-button">Stop Preview</button>`,
+      //   attributes: { title: "Stop HTTP Preview Server" },
+      //   command: stopPreview,
+      //   // Only show stop button if preview is active
+      //   visible: previewActive,
+      // },
+      // {
+      //   id: "view-published",
+      //   label: `<button class="view-published-button">View Published</button>`,
+      //   attributes: { title: "View Published Site" },
+      //   command: viewPublished,
+      //   // Only show view button if preview is active
+      //   visible: previewActive,
+      // },
       {
         id: "publish",
         label: `<button class="publish-button">Publish</button>`,
