@@ -33,7 +33,7 @@ const initialState = {
   },
   pages: [
     {
-      id: "page1",
+      id: "home",
       title: "Home",
       widgets: [
         {
@@ -77,7 +77,7 @@ const initialState = {
       styles: "",
     },
     {
-      id: "page2",
+      id: "about",
       title: "About",
       widgets: [
         {
