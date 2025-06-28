@@ -240,6 +240,69 @@ export function prepareBuildDirectory() {
   // Option 2: Also copy individual files for debugging purposes
   // This is optional and can be removed if you only want the bundle
   copyJavaScriptFiles();
+  
+  // Copy library files (like Splide.js) to build directory
+  copyLibDirectory();
 
   return { buildDir, stylesDir, scriptsDir }
+}
+
+/**
+ * Copies the entire public/lib directory to build/lib
+ * This ensures all library files (like Splide.js) are available in the published site
+ */
+export function copyLibDirectory() {
+  const { buildDir } = createBuildDirectories();
+  const publicLibDir = path.join(process.cwd(), "public", "lib");
+  const buildLibDir = path.join(buildDir, "lib");
+  const copiedFiles = [];
+
+  // Check if public/lib directory exists
+  if (!fs.existsSync(publicLibDir)) {
+    console.log("Warning: public/lib directory not found, skipping library copy");
+    return { copiedFiles: [], destinationPath: buildLibDir };
+  }
+
+  // Recursively copy directory and track files
+  function copyRecursive(srcDir, destDir) {
+    // Create destination directory if it doesn't exist
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    // Read all items in source directory
+    const items = fs.readdirSync(srcDir);
+
+    items.forEach(item => {
+      const srcPath = path.join(srcDir, item);
+      const destPath = path.join(destDir, item);
+      const stat = fs.statSync(srcPath);
+
+      if (stat.isDirectory()) {
+        // Recursively copy subdirectories
+        copyRecursive(srcPath, destPath);
+      } else {
+        // Copy file
+        fs.copyFileSync(srcPath, destPath);
+        // Track relative path from build directory
+        const relativePath = path.relative(buildDir, destPath);
+        copiedFiles.push(relativePath);
+        console.log(`Library file copied: ${relativePath}`);
+      }
+    });
+  }
+
+  try {
+    copyRecursive(publicLibDir, buildLibDir);
+    console.log(`Successfully copied library directory to ${buildLibDir}`);
+    console.log(`Total files copied: ${copiedFiles.length}`);
+  } catch (error) {
+    console.error(`Error copying library directory: ${error.message}`);
+    throw error;
+  }
+
+  return {
+    copiedFiles,
+    destinationPath: buildLibDir
+  };
 }

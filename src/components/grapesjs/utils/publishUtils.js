@@ -98,3 +98,24 @@ export const generateHtmlTemplate = (title, content, cssFileName) => {
 </body>
 </html>`;
 };
+
+/**
+ * Copies library files from public/lib to build/lib
+ * @returns {Promise<Object>} Response data from the API
+ */
+export const copyLibraryFiles = async () => {
+  try {
+    const response = await fetch("/api/publish/copy-lib", {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to copy library files");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error copying library files:", error);
+    throw error;
+  }
+};

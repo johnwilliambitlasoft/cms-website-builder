@@ -38,34 +38,63 @@ export const banner_search_widget_1 = {
       <div class="splide__track">
         <ul class="splide__list">
           <li class="splide__slide" style="background-image: url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-            <div class="slide-overlay"></div>
+            <div class="slide-overlay">
+              <h1>Search Your Bus Route</h1>
+            </div>
           </li>
           <li class="splide__slide" style="background-image: url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-            <div class="slide-overlay"></div>
+            <div class="slide-overlay">
+              <h1>Find Your Perfect Journey</h1>
+            </div>
           </li>
           <li class="splide__slide" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-            <div class="slide-overlay"></div>
+            <div class="slide-overlay">
+              <h1>Explore New Destinations</h1>
+            </div>
           </li>
         </ul>
       </div>
     </div>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var splide = new Splide(".splide", {
-        type: "loop",
+    document.addEventListener('DOMContentLoaded', function() {
+    debugger
+      var splide = new Splide('.splide', {
+        type: 'loop',
         perPage: 1,
-        autoplay: true,
-        interval: 1000,
-        arrows: false,
+        perMove: 1,
+        gap: '1rem',
+        breakpoints: {
+          768: {
+            perPage: 1,
+          },
+        },
       });
       splide.mount();
     });
   </script>
   `,
   css: `
-    .splide__slide{
-      min-height: 619px;
-      }
+    .splide {
+      max-width: 800px;
+      margin: 50px auto;
+    }
+    .splide__slide {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 10px;
+      margin: 0 10px;
+    }
+    .slide-overlay h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: #333;
+    }
   `,
   metadata: {
     id: "banner_search_widget_1",

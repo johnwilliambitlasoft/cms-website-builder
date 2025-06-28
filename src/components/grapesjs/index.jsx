@@ -61,7 +61,8 @@ import {
   createBuildDirectories,
   savePageFiles,
   normalizeFileName, 
-  generateHtmlTemplate
+  generateHtmlTemplate,
+  copyLibraryFiles
 } from "./utils/publishUtils";
 
 // Canvas utilities
@@ -149,8 +150,9 @@ const Grapesjs = () => {
       setLoading(true);
       messageApi.info("Publishing pages...");
       
-      // Create build directories first
+      // Create build directories first (this also copies library files automatically)
       await createBuildDirectories();
+      messageApi.info("Build directories created and library files copied...");
       
       // Generate and save all page files
       const publishedPages = await generateAllPages();
