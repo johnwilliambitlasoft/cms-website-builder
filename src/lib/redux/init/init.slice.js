@@ -126,6 +126,50 @@ const initialState = {
             },
           },
         },
+        {
+          id: "banner_search_widget",
+          folder: "banner_search_widget",
+          title: "Banner Search Widget",
+          templateId: "banner_search_widget_1",
+          thumbnail: "/assets/svg/banner_search_widget.svg",
+          description:
+            "A banner search widget that allows users to search for products or content directly from the homepage.",
+          data: {
+            title: "Find Your Perfect Journey",
+            subtitle: "Search and book bus tickets between cities across the country",
+            searchType: "city",
+            fromCityLabel: "From",
+            toCityLabel: "To",
+            departureDateLabel: "Departure Date",
+            returnDateLabel: "Return Date",
+            showReturnDate: false,
+            searchButtonText: "Search Buses",
+            popularCities: [
+              { name: "New York", code: "NYC", state: "New York" },
+              { name: "Los Angeles", code: "LAX", state: "California" },
+              { name: "Chicago", code: "CHI", state: "Illinois" },
+              { name: "Houston", code: "HOU", state: "Texas" },
+              { name: "Miami", code: "MIA", state: "Florida" },
+              { name: "Boston", code: "BOS", state: "Massachusetts" }
+            ],
+            apiConfig: {
+              citySearchEndpoint: "/api/cities/search",
+              routeSearchEndpoint: "/api/routes/search",
+              enableAutoComplete: true,
+              minSearchLength: 3
+            },
+            styles: {
+              backgroundColor: "#f8f9fa",
+              overlayColor: "rgba(0, 0, 0, 0.4)",
+              textColor: "#333333",
+              buttonColor: "#007bff",
+              buttonHoverColor: "#0056b3",
+              inputBorderColor: "#ddd",
+              borderRadius: 8,
+              padding: "40px 20px"
+            }
+          },
+        }
       ],
       component: "",
       styles: "",
